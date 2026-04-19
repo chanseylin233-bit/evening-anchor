@@ -246,6 +246,8 @@
       flex-wrap: wrap;
     }
     .btn-group.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    #goalGroup { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    #goalGroup .opt-btn { min-width: 0; }
 
     .opt-btn {
       flex: 1;
@@ -2050,6 +2052,7 @@
     block.classList.toggle('done', cb.checked);
     updateProgress();
   }
+
   function toggleLowDone(cb) {
     const block = cb.closest('.lowpower-block');
     if (cb.checked) {
@@ -2175,3 +2178,5 @@
 </script>
 </body>
 </html>
+
+
