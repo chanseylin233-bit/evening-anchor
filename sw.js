@@ -1,4 +1,4 @@
-﻿const CACHE_VERSION = 'evening-anchor-' + Date.now();
+const CACHE_VERSION = 'evening-anchor-' + Date.now();
 let CACHE_NAME;
 
 const PRECACHE_ASSETS = [
