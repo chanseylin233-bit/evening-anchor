@@ -285,28 +285,35 @@
       font-weight: 400;
     }
 
-    /* 鈹€鈹€鈹€ ENERGY GROUP (compact) 鈹€鈹€鈹€ */
-    .energy-group {
+    /* 鈹€鈹€鈹€ COMPACT BTN GROUP (energy, tomorrow) 鈹€鈹€鈹€ */
+    .energy-group,
+    .compact-group {
       flex-direction: row;
       align-items: center;
     }
-    .energy-group .opt-btn {
+    .energy-group .opt-btn,
+    .compact-group .opt-btn {
       flex-direction: row;
       padding: 8px 14px;
       gap: 6px;
       border-radius: 8px;
       min-width: auto;
     }
-    .energy-group .opt-icon {
+    .energy-group .opt-icon,
+    .compact-group .opt-icon {
       font-size: 1rem;
+    }
+    .energy-group .opt-icon {
       display: inline-block;
       transform: rotate(-90deg);
     }
-    .energy-group .opt-text {
+    .energy-group .opt-text,
+    .compact-group .opt-text {
       font-size: 0.85rem;
       font-weight: 500;
     }
-    .energy-group .sub { display: none; }
+    .energy-group .sub,
+    .compact-group .sub { display: none; }
 
     /* 鈹€鈹€鈹€ CONDITIONAL 鈹€鈹€鈹€ */
     .conditional-field {
@@ -914,7 +921,7 @@
 
     <div class="field">
       <div class="field-label"><span class="emoji">鈿?/span>褰撳墠绮惧姏鐘舵€?/div>
-      <div class="btn-group energy-group" id="energyGroup">
+      <div class="btn-group compact-group energy-group" id="energyGroup">
         <button class="opt-btn" data-value="low" onclick="selectOpt(this,'energy')">
           <span class="opt-icon">馃</span>
           <span class="opt-text">浣?/span>
@@ -986,14 +993,14 @@
 
     <div class="field">
       <div class="field-label"><span class="emoji">鈴?/span>鏄庢棩閲嶈浜嬮」</div>
-      <div class="btn-group two-col" id="tomorrowGroup">
+      <div class="btn-group compact-group" id="tomorrowGroup">
         <button class="opt-btn" data-value="none" onclick="selectOpt(this,'tomorrow')">
           <span class="opt-icon">馃垰</span>
-          <span>鏃?/span>
+          <span class="opt-text">鏃?/span>
         </button>
         <button class="opt-btn" data-value="has" onclick="selectOpt(this,'tomorrow')">
           <span class="opt-icon">馃搶</span>
-          <span>鏈?/span>
+          <span class="opt-text">鏈?/span>
         </button>
       </div>
       <div class="conditional-field" id="tomorrowTimeField">
