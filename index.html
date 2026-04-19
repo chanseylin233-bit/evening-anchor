@@ -1024,6 +1024,7 @@
     /* Selection */
     ::selection { background: rgba(255,184,108,0.2); color: var(--text-primary); }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -1173,6 +1174,7 @@
     <div class="plan-header">
       <button class="back-btn" onclick="resetForm()">← 重新填写</button>
       <div class="plan-title">📋 今晚安排</div>
+      <button class="copy-btn" id="exportBtn" onclick="exportImage()">🖼 导出</button>
       <button class="copy-btn" id="copyBtn" onclick="copyPlan()">📋 复制</button>
     </div>
 
@@ -1862,6 +1864,48 @@
         btn.textContent = '📋 复制';
         btn.classList.remove('copied');
       }, 2000);
+    });
+  }
+
+  /* ─── EXPORT IMAGE ─── */
+  function exportImage() {
+    const btn = document.getElementById('exportBtn');
+    btn.textContent = '⏳ 生成中…';
+    btn.disabled = true;
+
+    const planView = document.getElementById('planView');
+    const liveBar = document.getElementById('liveBar');
+
+    // Hide live bar and buttons during capture
+    const planHeader = planView.querySelector('.plan-header');
+    const planBody = planView.querySelector('.plan-body');
+    planHeader.style.display = 'none';
+    liveBar.style.display = 'none';
+
+    html2canvas(planBody, {
+      backgroundColor: '#FDF6EC',
+      scale: 2,
+      useCORS: true,
+      logging: false
+    }).then(canvas => {
+      planHeader.style.display = '';
+      liveBar.style.display = '';
+
+      const link = document.createElement('a');
+      link.download = `晚间安排_${new Date().toISOString().slice(0,10)}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      btn.textContent = '✅ 已保存';
+      setTimeout(() => {
+        btn.textContent = '🖼 导出';
+        btn.disabled = false;
+      }, 2000);
+    }).catch(() => {
+      planHeader.style.display = '';
+      liveBar.style.display = '';
+      btn.textContent = '🖼 导出';
+      btn.disabled = false;
     });
   }
 
