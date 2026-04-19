@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FDF6EC">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="晚间锚点">
+  <meta name="description" content="你的晚间安排生成器，下班到家直接执行">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-192.svg">
+  <link rel="icon" href="./icon-192.svg" type="image/svg+xml">
   <title>Evening Anchor — 给自己一个值得的夜晚</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -285,6 +293,36 @@
       font-weight: 400;
     }
 
+    /* ─── COMPACT BTN GROUP (energy, tomorrow) ─── */
+    .energy-group,
+    .compact-group {
+      flex-direction: row;
+      align-items: center;
+    }
+    .energy-group .opt-btn,
+    .compact-group .opt-btn {
+      flex-direction: row;
+      padding: 8px 14px;
+      gap: 6px;
+      border-radius: 8px;
+      min-width: auto;
+    }
+    .energy-group .opt-icon,
+    .compact-group .opt-icon {
+      font-size: 1rem;
+    }
+    .energy-group .opt-icon {
+      display: inline-block;
+      transform: rotate(-90deg);
+    }
+    .energy-group .opt-text,
+    .compact-group .opt-text {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .energy-group .sub,
+    .compact-group .sub { display: none; }
+
     /* ─── CONDITIONAL ─── */
     .conditional-field {
       margin-top: 14px;
@@ -384,6 +422,131 @@
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+    .copy-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+    .copy-btn:hover { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .copy-btn.copied { border-color: var(--accent-low); color: var(--accent-low); }
+
+    /* ─── LATE NIGHT MODE ─── */
+    .late-night-banner {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #e0e0e0;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: fadeSlideIn 0.4s ease;
+    }
+    .late-night-banner .ln-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #FFD93D;
+    }
+    .late-night-banner .ln-hint {
+      color: #aaa;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+    .late-night-dismiss {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #ccc;
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .late-night-dismiss:hover { border-color: #FFD93D; color: #FFD93D; }
+    .field.late-hidden { display: none; }
+    .field.late-dimmed { opacity: 0.5; pointer-events: none; }
+
+    /* ─── CELEBRATION ─── */
+    #confettiCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .celebrate-toast {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      background: linear-gradient(135deg, #FFD93D 0%, #FF6B6B 100%);
+      color: #fff;
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      padding: 20px 36px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(255,107,107,0.35);
+      z-index: 10000;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .celebrate-toast.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* ─── LIVE BAR ─── */
+    .live-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0 16px;
+      font-family: 'JetBrains Mono', monospace;
+      animation: fadeUp 0.4s ease-out 0.1s both;
+    }
+    .live-clock {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.04em;
+    }
+    .live-countdown {
+      font-size: 0.78rem;
+      color: var(--accent-warm);
+      background: rgba(255,184,108,0.1);
+      padding: 3px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .live-countdown.idle { color: var(--text-dim); background: rgba(255,255,255,0.04); }
+
+    /* ─── CURRENT BLOCK HIGHLIGHT ─── */
+    .plan-block.current {
+      border-color: var(--accent-warm);
+      box-shadow: 0 0 0 2px rgba(255,184,108,0.25), 0 4px 20px rgba(255,184,108,0.1);
+    }
+    .plan-block.current::before {
+      background: var(--accent-warm);
+      width: 4px;
+    }
+    .plan-block.current .block-action {
+      color: var(--accent-warm);
+    }
+    .plan-block.past {
+      opacity: 0.45;
     }
 
     /* ─── SUMMARY BAR ─── */
@@ -491,11 +654,62 @@
       font-family: 'Noto Sans SC', sans-serif;
     }
 
+    /* ─── CHECKBOX ─── */
+    .block-check {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      width: 22px;
+      height: 22px;
+      appearance: none;
+      -webkit-appearance: none;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .block-check:hover {
+      border-color: var(--accent-warm);
+      background: rgba(255,184,108,0.05);
+    }
+    .block-check:checked {
+      background: var(--accent-warm);
+      border-color: var(--accent-warm);
+    }
+    .block-check:checked::after {
+      content: '✓';
+      color: #1a1000;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    /* Completed state */
+    .plan-block.done {
+      opacity: 0.5;
+    }
+    .plan-block.done .block-action {
+      text-decoration: line-through;
+      text-decoration-color: var(--text-dim);
+      color: var(--text-muted);
+    }
+    .plan-block.done .block-icon { opacity: 0.5; }
+    .plan-block.done .block-desc { display: none; }
+    .plan-block.done .block-subtasks { display: none; }
+    .plan-block.done .block-time .block-start { color: var(--text-dim); }
+    .plan-block.done .first-badge { display: none; }
+    .plan-block.done::before { background: var(--text-dim); }
+
     .block-main {
       display: flex;
       align-items: baseline;
       gap: 8px;
       margin-bottom: 6px;
+      padding-right: 32px;
     }
     .block-icon { font-size: 1.1rem; }
     .block-action {
@@ -504,6 +718,7 @@
       font-weight: 600;
       color: var(--text-primary);
       line-height: 1.3;
+      transition: color 0.25s, text-decoration 0.25s;
     }
     .first .block-action { color: var(--accent-warm); }
 
@@ -597,6 +812,7 @@
       opacity: 0;
       transform: translateY(8px);
       transition: opacity 0.3s, transform 0.3s;
+      position: relative;
     }
     .lowpower-block.visible { opacity: 1; transform: translateY(0); }
     .lowpower-block::before {
@@ -666,6 +882,140 @@
       background: var(--border);
     }
 
+    /* ─── MOBILE COMPACT MODE ─── */
+    .compact-toggle {
+      display: none;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .compact-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+    .compact-btn:hover { border-color: var(--text-dim); color: var(--text-primary); }
+    .compact-btn.active { border-color: var(--accent-cool); color: var(--accent-cool); background: rgba(122,162,247,0.08); }
+
+    /* Mobile responsive — compact adjustments */
+    @media (max-width: 600px) {
+      .container { padding: 28px 14px 60px; }
+      .header { margin-bottom: 28px; }
+      .header h1 { font-size: 1.8rem; }
+      .form-card { padding: 22px 18px; border-radius: 16px; }
+      .field { margin-bottom: 22px; }
+      .generate-btn { padding: 14px 20px; margin-top: 24px; border-radius: 12px; }
+
+      .compact-toggle { display: block; }
+
+      /* ── Compact block layout ── */
+      .compact-mode .plan-block {
+        padding: 12px 14px;
+        border-radius: 10px;
+      }
+      .compact-mode .plan-block.first {
+        padding: 12px 14px;
+      }
+      .compact-mode .block-check {
+        width: 18px;
+        height: 18px;
+        right: 12px;
+        top: 12px;
+        border-radius: 5px;
+      }
+      .compact-mode .block-check:checked::after {
+        font-size: 11px;
+      }
+      .compact-mode .block-main {
+        padding-right: 28px;
+      }
+      .compact-mode .first-badge {
+        display: inline-flex;
+        margin-bottom: 4px;
+        padding: 2px 8px;
+        font-size: 0.65rem;
+        animation: none;
+      }
+      .compact-mode .block-time {
+        margin-bottom: 0;
+        font-size: 0.68rem;
+      }
+      .compact-mode .block-start { font-size: 0.68rem; }
+      .compact-mode .block-duration { font-size: 0.62rem; padding: 0 5px; }
+      .compact-mode .block-main {
+        margin-bottom: 2px;
+        gap: 6px;
+      }
+      .compact-mode .block-icon { font-size: 0.95rem; }
+      .compact-mode .block-action {
+        font-size: 1.05rem;
+        line-height: 1.2;
+      }
+      .compact-mode .block-meta { gap: 6px; }
+      .compact-mode .block-tag {
+        font-size: 0.64rem;
+        padding: 1px 6px;
+      }
+      /* Collapsible desc */
+      .compact-mode .block-desc {
+        display: none;
+        font-size: 0.74rem;
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px dashed var(--border);
+      }
+      .compact-mode .plan-block.desc-open .block-desc {
+        display: block;
+      }
+      .compact-mode .plan-block::after {
+        content: '⋯';
+        position: absolute;
+        right: 12px;
+        bottom: 8px;
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        opacity: 0.5;
+      }
+      .compact-mode .plan-block.desc-open::after {
+        content: '∧';
+      }
+
+      /* Subtasks in compact */
+      .compact-mode .block-subtasks {
+        margin-top: 8px;
+        padding-top: 6px;
+      }
+      .compact-mode .subtasks-label { font-size: 0.65rem; margin-bottom: 4px; }
+      .compact-mode .subtask-item { font-size: 0.8rem; line-height: 1.4; }
+
+      /* Summary bar compact */
+      .compact-mode .summary-bar {
+        padding: 10px 14px;
+        gap: 10px;
+        border-radius: 10px;
+        flex-wrap: wrap;
+      }
+      .compact-mode .summary-sep { height: 24px; }
+      .compact-mode .summary-value { font-size: 0.85rem; }
+      .compact-mode .summary-label { font-size: 0.62rem; }
+      .compact-mode .summary-hint { display: none; }
+
+      /* Low power compact */
+      .compact-mode .lowpower-block { padding: 10px 14px; margin-bottom: 4px; }
+      .compact-mode .lowpower-time { font-size: 0.66rem; }
+      .compact-mode .lowpower-action { font-size: 0.82rem; }
+      .compact-mode .lowpower-note { font-size: 0.68rem; }
+
+      /* Non-compact mobile still gets some reduction */
+      .plan-block { padding: 14px 16px; }
+      .block-action { font-size: 1.15rem; }
+    }
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -695,35 +1045,42 @@
 
   <!-- FORM -->
   <div class="form-card" id="formCard">
-    <div class="field">
-      <div class="field-label"><span class="emoji">🕐</span>下班到家时间</div>
+    <div class="late-night-banner" id="lateNightBanner">
+      <span>🌙</span>
+      <div>
+        <span class="ln-time" id="lnCurrentTime"></span>
+        <div>深夜了，帮你精简到最核心的几项 →</div>
+        <div class="ln-hint">已隐藏晚餐安排、今晚目标、明日事项（精力不足时默认休息）</div>
+      </div>
+      <button class="late-night-dismiss" onclick="dismissLateNight()">显示全部</button>
+    </div>
+
+    <div class="field" data-late="keep">
+      <div class="field-label"><span class="emoji">🕐</span>预计下班到家时间</div>
       <div class="time-input-wrap">
         <input type="time" id="arrivalTime" value="19:30" />
       </div>
     </div>
 
-    <div class="field">
+    <div class="field" data-late="keep">
       <div class="field-label"><span class="emoji">⚡</span>当前精力状态</div>
-      <div class="btn-group" id="energyGroup">
+      <div class="btn-group compact-group energy-group" id="energyGroup">
         <button class="opt-btn" data-value="low" onclick="selectOpt(this,'energy')">
           <span class="opt-icon">🪫</span>
-          <span>低</span>
-          <span class="sub">疲惫</span>
+          <span class="opt-text">低</span>
         </button>
         <button class="opt-btn selected" data-value="mid" onclick="selectOpt(this,'energy')">
           <span class="opt-icon">🟡</span>
-          <span>中</span>
-          <span class="sub">一般</span>
+          <span class="opt-text">中</span>
         </button>
         <button class="opt-btn" data-value="high" onclick="selectOpt(this,'energy')">
           <span class="opt-icon">🔋</span>
-          <span>高</span>
-          <span class="sub">充沛</span>
+          <span class="opt-text">高</span>
         </button>
       </div>
     </div>
 
-    <div class="field">
+    <div class="field" data-late="hide">
       <div class="field-label"><span class="emoji">🍽️</span>晚餐安排</div>
       <div class="btn-group" id="sceneGroup">
         <button class="opt-btn selected-cool" data-value="alone" onclick="selectOpt(this,'scene')">
@@ -751,7 +1108,7 @@
       </div>
     </div>
 
-    <div class="field">
+    <div class="field" data-late="hide">
       <div class="field-label"><span class="emoji">🎯</span>今晚主目标</div>
       <div class="btn-group" id="goalGroup">
         <button class="opt-btn" data-value="rest" onclick="selectOpt(this,'goal')">
@@ -777,16 +1134,16 @@
       </div>
     </div>
 
-    <div class="field">
+    <div class="field" data-late="hide">
       <div class="field-label"><span class="emoji">⏰</span>明日重要事项</div>
-      <div class="btn-group two-col" id="tomorrowGroup">
+      <div class="btn-group compact-group" id="tomorrowGroup">
         <button class="opt-btn" data-value="none" onclick="selectOpt(this,'tomorrow')">
           <span class="opt-icon">🈚</span>
-          <span>无</span>
+          <span class="opt-text">无</span>
         </button>
         <button class="opt-btn" data-value="has" onclick="selectOpt(this,'tomorrow')">
           <span class="opt-icon">📌</span>
-          <span>有</span>
+          <span class="opt-text">有</span>
         </button>
       </div>
       <div class="conditional-field" id="tomorrowTimeField">
@@ -796,12 +1153,12 @@
       </div>
     </div>
 
-    <div class="field">
+    <div class="field" data-late="keep">
       <div class="field-label"><span class="emoji">🔥</span>今晚必须完成的事</div>
       <textarea id="mustDoInput" rows="3" placeholder="例如：写完项目报告初稿、给妈妈打电话、还信用卡……&#10;也可以留空"></textarea>
     </div>
 
-    <div class="field">
+    <div class="field" data-late="keep">
       <div class="field-label"><span class="emoji">🌙</span>预计入睡时间</div>
       <div class="time-input-wrap">
         <input type="time" id="sleepTimeInput" value="23:00" />
@@ -819,12 +1176,31 @@
     <div class="plan-header">
       <button class="back-btn" onclick="resetForm()">← 重新填写</button>
       <div class="plan-title">📋 今晚安排</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyPlan()">📋 复制</button>
+    </div>
+
+    <div class="live-bar" id="liveBar">
+      <span class="live-clock" id="liveClock">--:--</span>
+      <span class="live-countdown" id="liveCountdown"></span>
     </div>
 
     <div class="summary-bar" id="summaryBar">
       <!-- filled by JS -->
     </div>
 
+    <div class="progress-wrap" id="progressWrap" style="display:none; margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:0.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;">完成进度</span>
+        <span id="progressText" style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent-low);">0/0</span>
+      </div>
+      <div style="height:4px;background:var(--bg-input);border-radius:4px;overflow:hidden;">
+        <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent-low),var(--accent-cool));border-radius:4px;transition:width 0.4s ease;"></div>
+      </div>
+    </div>
+
+    <div class="compact-toggle">
+      <button class="compact-btn" id="compactBtn" onclick="toggleCompact()">📐 紧凑模式</button>
+    </div>
     <div class="plan-blocks" id="planBlocks">
       <!-- filled by JS -->
     </div>
@@ -856,6 +1232,59 @@
     mustDo: '',
     sleepTime: '23:00'
   };
+
+  const LATE_NIGHT_HOUR = 22; // trigger at 22:00
+  let lateNightMode = false;
+
+  /* ─── LATE NIGHT AUTO-SIMPLIFY ─── */
+  function checkLateNight() {
+    const now = new Date();
+    const h = now.getHours();
+    const m = now.getMinutes();
+    if (h < LATE_NIGHT_HOUR) return; // daytime, skip
+
+    lateNightMode = true;
+
+    // Show banner
+    const banner = document.getElementById('lateNightBanner');
+    banner.style.display = 'flex';
+    document.getElementById('lnCurrentTime').textContent =
+      `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+
+    // Auto-fill smart defaults
+    const nowStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    document.getElementById('arrivalTime').value = nowStr;
+
+    // Set energy to low if midnight
+    if (h >= 23) {
+      clickOpt('energyGroup', 'low');
+    }
+
+    // Set goal to rest
+    clickOpt('goalGroup', 'rest');
+
+    // Set tomorrow to none
+    clickOpt('tomorrowGroup', 'none');
+
+    // Hide non-essential fields
+    document.querySelectorAll('[data-late="hide"]').forEach(el => {
+      el.classList.add('late-hidden');
+    });
+  }
+
+  function clickOpt(groupId, value) {
+    const btn = document.querySelector(`#${groupId} [data-value="${value}"]`);
+    if (btn) selectOpt(btn, groupId.replace('Group', ''));
+  }
+
+  function dismissLateNight() {
+    lateNightMode = false;
+    document.getElementById('lateNightBanner').style.display = 'none';
+    document.querySelectorAll('.late-hidden').forEach(el => el.classList.remove('late-hidden'));
+  }
+
+  // Run on page load
+  checkLateNight();
 
   /* ─── SELECT OPTION ─── */
   function selectOpt(el, group) {
@@ -1191,6 +1620,8 @@
 
       document.getElementById('formCard').classList.add('hidden');
       document.getElementById('planView').classList.add('visible');
+      document.getElementById('progressWrap').style.display = 'block';
+      updateProgress();
       btn.classList.remove('loading');
       btn.disabled = false;
 
@@ -1257,6 +1688,7 @@
         : '';
       return `
       <div class="plan-block ${b.type} ${i === 0 ? 'first' : ''}">
+        <input type="checkbox" class="block-check" onclick="toggleBlockDone(this)" />
         ${i === 0 ? '<div class="first-badge">▶ 第一步，从这里开始</div>' : ''}
         <div class="block-time">
           <span class="block-start">${b.time.start}</span>
@@ -1281,6 +1713,7 @@
     // Low power blocks
     const lpHtml = lowPower.map(b => `
       <div class="lowpower-block">
+        <input type="checkbox" class="block-check" onclick="toggleLowDone(this)" style="position:absolute;right:12px;top:10px;width:18px;height:18px;appearance:none;-webkit-appearance:none;border:2px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;" />
         <span class="lowpower-time">${b.time.start} – ${b.time.end}</span>
         <span class="lowpower-action">${b.action}</span>
         <div class="lowpower-note">${b.note}</div>
@@ -1292,6 +1725,11 @@
     // Reset lowpower toggle
     document.getElementById('lowpowerSection').classList.remove('visible');
     document.getElementById('lowpowerLabel').textContent = '精力不支时的保底方案';
+
+    // Start live countdown
+    startLiveTimer(mainPlan);
+    // Cache for copy
+    cachedPlan = { arrival, mainPlan, lowPower, sleepTime, mustDo };
   }
 
   function parseTime(t) {
@@ -1311,6 +1749,265 @@
   function resetForm() {
     document.getElementById('planView').classList.remove('visible');
     document.getElementById('formCard').classList.remove('hidden');
+    document.getElementById('progressWrap').style.display = 'none';
+    isCompact = false;
+    document.getElementById('planView').classList.remove('compact-mode');
+    document.getElementById('compactBtn').classList.remove('active');
+    document.getElementById('compactBtn').textContent = '📐 紧凑模式';
+    if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+    celebrated = false;
+  }
+
+  /* ─── LIVE COUNTDOWN ─── */
+  let liveTimer = null;
+  let planBlocks = []; // cached block times [{start, end}, ...]
+  let cachedPlan = null; // full plan data for copy
+
+  function parseTimeHM(str) {
+    const [h, m] = str.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function startLiveTimer(blocks) {
+    // blocks: array of {time: {start, end}} from buildPlan output
+    planBlocks = blocks.map(b => ({
+      startMins: parseTimeHM(b.time.start),
+      endMins: parseTimeHM(b.time.end)
+    }));
+    tick();
+    if (liveTimer) clearInterval(liveTimer);
+    liveTimer = setInterval(tick, 15000); // every 15s
+  }
+
+  function tick() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    document.getElementById('liveClock').textContent = `${hh}:${mm}`;
+
+    const cdEl = document.getElementById('liveCountdown');
+    const allBlocks = document.querySelectorAll('#planBlocks .plan-block');
+
+    // Remove old classes
+    allBlocks.forEach(b => b.classList.remove('current', 'past'));
+
+    if (!planBlocks.length) { cdEl.textContent = ''; return; }
+
+    // Find current / next block
+    let currentIdx = -1;
+    let nextIdx = -1;
+    for (let i = 0; i < planBlocks.length; i++) {
+      const b = planBlocks[i];
+      if (nowMins >= b.startMins && nowMins < b.endMins) {
+        currentIdx = i;
+        break;
+      }
+      if (nowMins < b.startMins && nextIdx === -1) {
+        nextIdx = i;
+      }
+    }
+
+    // Mark past blocks
+    for (let i = 0; i < planBlocks.length; i++) {
+      if (i < currentIdx || (currentIdx === -1 && nowMins > planBlocks[i].endMins)) {
+        allBlocks[i]?.classList.add('past');
+      }
+    }
+
+    // Highlight current
+    if (currentIdx >= 0) {
+      allBlocks[currentIdx]?.classList.add('current');
+      const remain = planBlocks[currentIdx].endMins - nowMins;
+      cdEl.textContent = `⏳ 当前: ${remain} 分钟剩余`;
+      cdEl.classList.remove('idle');
+    } else if (nextIdx >= 0) {
+      const wait = planBlocks[nextIdx].startMins - nowMins;
+      cdEl.textContent = `▶ ${wait} 分钟后开始下一项`;
+      cdEl.classList.remove('idle');
+    } else {
+      cdEl.textContent = '🌙 计划已结束';
+      cdEl.classList.add('idle');
+    }
+  }
+
+  /* ─── COPY PLAN ─── */
+  function copyPlan() {
+    if (!cachedPlan) return;
+    const { arrival, mainPlan, lowPower, sleepTime, mustDo } = cachedPlan;
+    const goalLabel = goalConfig[state.goal]?.label || state.goal;
+    const energyLabel = { low: '低', mid: '中', high: '高' };
+
+    let text = `📋 今晚安排\n`;
+    text += `到家 ${arrival} ｜ ${energyLabel[state.energy]}精力 ｜ ${sceneLabels[state.scene]}\n`;
+    text += `目标: ${goalLabel} ｜ 入睡 ${sleepTime}\n`;
+    if (mustDo) text += `必做: ${mustDo}\n`;
+    text += `${'─'.repeat(20)}\n\n`;
+
+    mainPlan.forEach(b => {
+      const dur = parseTime(b.time.end) - parseTime(b.time.start);
+      text += `${b.time.start} → ${b.time.end}  ${b.icon} ${b.action} (${dur}分钟)\n`;
+      text += `   ${b.desc}\n`;
+      if (b.sub?.length) {
+        text += `   🔥 必做:\n`;
+        b.sub.forEach(t => { text += `   · ${t}\n`; });
+      }
+      text += '\n';
+    });
+
+    text += `${'─'.repeat(20)}\n`;
+    text += `🔋 保底方案\n\n`;
+    lowPower.forEach(b => {
+      text += `${b.time.start} → ${b.time.end}  ${b.action}\n   ${b.note}\n\n`;
+    });
+
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✅ 已复制';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 复制';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  /* ─── COMPACT MODE ─── */
+  let isCompact = false;
+  function toggleCompact() {
+    isCompact = !isCompact;
+    const view = document.getElementById('planView');
+    const btn = document.getElementById('compactBtn');
+    view.classList.toggle('compact-mode', isCompact);
+    btn.classList.toggle('active', isCompact);
+    btn.textContent = isCompact ? '📐 展开模式' : '📐 紧凑模式';
+  }
+
+  /* ─── BLOCK DESC TOGGLE (compact mode) ─── */
+  document.addEventListener('click', function(e) {
+    if (!isCompact) return;
+    const block = e.target.closest('.plan-block');
+    if (!block) return;
+    // Don't toggle if clicking checkbox or subtasks area
+    if (e.target.closest('.block-check')) return;
+    if (e.target.closest('.block-subtasks')) return;
+    block.classList.toggle('desc-open');
+  });
+
+  /* ─── CHECKBOX TOGGLE ─── */
+  function toggleBlockDone(cb) {
+    const block = cb.closest('.plan-block');
+    block.classList.toggle('done', cb.checked);
+    updateProgress();
+  }
+  function toggleLowDone(cb) {
+    const block = cb.closest('.lowpower-block');
+    if (cb.checked) {
+      block.style.opacity = '0.4';
+      block.style.textDecoration = 'line-through';
+      block.style.color = 'var(--text-dim)';
+    } else {
+      block.style.opacity = '1';
+      block.style.textDecoration = 'none';
+      block.style.color = '';
+    }
+    if (cb.style.cssText) {
+      // Update checked style
+      cb.style.background = cb.checked ? 'var(--accent-low)' : 'transparent';
+      cb.style.borderColor = cb.checked ? 'var(--accent-low)' : 'var(--border)';
+    }
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  function updateProgress() {
+    const total = document.querySelectorAll('#planBlocks .plan-block').length;
+    const done = document.querySelectorAll('#planBlocks .plan-block.done').length;
+    const bar = document.getElementById('progressBar');
+    if (!bar) return;
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    bar.style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${done}/${total}`;
+
+    // All done → celebrate!
+    if (total > 0 && done === total) {
+      setTimeout(celebrate, 300);
+    }
+  }
+
+  /* ─── CELEBRATION (confetti + toast) ─── */
+  let celebrated = false;
+  const CONFETTI_COLORS = ['#FFD93D','#FF6B6B','#6BCB77','#4D96FF','#FF922B','#CC5DE8','#20C997'];
+
+  function celebrate() {
+    if (celebrated) return;
+    celebrated = true;
+
+    // Toast
+    const toast = document.createElement('div');
+    toast.className = 'celebrate-toast';
+    toast.textContent = '🎉 全部完成！今晚没白过';
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 500);
+    }, 2800);
+
+    // Confetti canvas
+    const cvs = document.createElement('canvas');
+    cvs.id = 'confettiCanvas';
+    document.body.appendChild(cvs);
+    cvs.width = window.innerWidth;
+    cvs.height = window.innerHeight;
+    const ctx = cvs.getContext('2d');
+
+    const pieces = Array.from({length: 80}, () => ({
+      x: Math.random() * cvs.width,
+      y: Math.random() * cvs.height - cvs.height,
+      w: Math.random() * 10 + 6,
+      h: Math.random() * 6 + 3,
+      color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+      vx: (Math.random() - 0.5) * 3,
+      vy: Math.random() * 3 + 2,
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 12,
+      opacity: 1
+    }));
+
+    let frame = 0;
+    const maxFrames = 150;
+    function draw() {
+      frame++;
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+      const fadeStart = maxFrames - 40;
+      pieces.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.06;
+        p.rot += p.rotV;
+        if (frame > fadeStart) p.opacity = Math.max(0, 1 - (frame - fadeStart) / 40);
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot * Math.PI / 180);
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+      if (frame < maxFrames) {
+        requestAnimationFrame(draw);
+      } else {
+        cvs.remove();
+        celebrated = false; // allow re-celebrate if uncheck + recheck
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+</script>
+<script>
+  // Register Service Worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
 </script>
 </body>

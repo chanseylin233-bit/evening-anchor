@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDF6EC"/>
+      <stop offset="100%" stop-color="#E8F5E9"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <text x="256" y="220" text-anchor="middle" font-size="150">🌙</text>
+  <text x="256" y="370" text-anchor="middle" font-family="sans-serif" font-size="74" font-weight="700" fill="#2D3436">晚间</text>
+  <text x="256" y="458" text-anchor="middle" font-family="sans-serif" font-size="74" font-weight="700" fill="#2D3436">锚点</text>
+</svg>
