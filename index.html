@@ -1119,10 +1119,7 @@
           <span class="opt-icon">📋</span>
           <span>生产力</span>
         </button>
-        <button class="opt-btn" data-value="social" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">💬</span>
-          <span>社交</span>
-        </button>
+
         <button class="opt-btn" data-value="hobby" onclick="selectOpt(this,'goal')">
           <span class="opt-icon">🎨</span>
           <span>爱好</span>
@@ -1330,11 +1327,7 @@
       mainLabel: '专注任务',
       blocks: (start, E) => []
     },
-    social: {
-      icon: '💬', label: '社交',
-      mainLabel: '社交连接',
-      blocks: (start, E) => []
-    },
+
     hobby: {
       icon: '🎨', label: '爱好',
       mainLabel: '投入爱好',
@@ -1945,7 +1938,7 @@
     // Toast
     const toast = document.createElement('div');
     toast.className = 'celebrate-toast';
-    toast.textContent = '🎉 全部完成！今晚没白过';
+    toast.textContent = '🎉 全部完成！A night well spent';
     document.body.appendChild(toast);
     requestAnimationFrame(() => toast.classList.add('show'));
     setTimeout(() => {
