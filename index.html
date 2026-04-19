@@ -1317,6 +1317,101 @@
     return { start, end };
   }
 
+  /* ─── TASK LIBRARY ─── */
+  // cat: 任务类别 | dur: 默认分钟数 | energy: 最低需要精力等级
+  const TASK_LIBRARY = [
+    // ─ 饮食 ─
+    { cat: '饮食', icon: '🍳', action: '做一顿简单的晚餐', dur: 40, energy: 'mid', desc: '一荤一素 + 汤或粥，快手菜优先' },
+    { cat: '饮食', icon: '🥗', action: '准备轻食/沙拉', dur: 20, energy: 'low', desc: '洗切拌，健康又快，少油烟' },
+    { cat: '饮食', icon: '🍲', action: '炖汤或慢煮料理', dur: 60, energy: 'high', desc: '适合有食材储备的日子，做完可以吃两顿' },
+    { cat: '饮食', icon: '🧃', action: '准备明天的便当/早餐', dur: 25, energy: 'mid', desc: '提前准备，明早省心' },
+    { cat: '饮食', icon: '🍵', action: '泡茶 + 小点心', dur: 15, energy: 'low', desc: '慢悠悠泡杯茶，配几块饼干或水果' },
+
+    // ─ 恢复 ─
+    { cat: '恢复', icon: '🧘', action: '15分钟正念冥想', dur: 15, energy: 'low', desc: '找一个安静的地方坐下，专注呼吸' },
+    { cat: '恢复', icon: '😴', action: '20分钟小睡', dur: 20, energy: 'low', desc: '定好闹钟，趴在桌上或躺沙发上' },
+    { cat: '恢复', icon: '🚿', action: '洗个热水澡', dur: 20, energy: 'low', desc: '让热水冲走一天的疲惫' },
+    { cat: '恢复', icon: '🦶', action: '泡脚 + 拉伸', dur: 20, energy: 'low', desc: '热水泡脚15分钟，顺便做几组简单拉伸' },
+    { cat: '恢复', icon: '☀️', action: '户外散步15分钟', dur: 15, energy: 'mid', desc: '下楼走一圈，呼吸新鲜空气' },
+    { cat: '恢复', icon: '👂', action: '听播客/音乐闭目养神', dur: 20, energy: 'low', desc: '戴上耳机，什么都不做，只听' },
+
+    // ─ 学习 ─
+    { cat: '学习', icon: '📖', action: '系统学习（看课程/做题）', dur: 45, energy: 'high', desc: '打开课程视频或教材，完整学习一个章节' },
+    { cat: '学习', icon: '📝', action: '看讲义 + 做题', dur: 30, energy: 'mid', desc: '20分钟看讲义理解概念，10分钟动手做题巩固' },
+    { cat: '学习', icon: '👀', action: '翻看一节内容', dur: 15, energy: 'low', desc: '只看一小节，不求全部消化，保持学习惯性' },
+    { cat: '学习', icon: '🃏', action: '复习闪卡/笔记', dur: 15, energy: 'low', desc: '用Anki或手写卡片快速过一遍今日知识点' },
+    { cat: '学习', icon: '✍️', action: '写学习总结', dur: 20, energy: 'mid', desc: '把今天学到的东西用自己的话写一遍' },
+
+    // ─ 爱好 ─
+    { cat: '爱好', icon: '🎨', action: '画画/手工创作', dur: 45, energy: 'high', desc: '给足自己一段不被打扰的创作时间' },
+    { cat: '爱好', icon: '🎵', action: '练乐器', dur: 30, energy: 'mid', desc: '完整练习一首曲子或一段新内容' },
+    { cat: '爱好', icon: '📖', action: '读一本喜欢的书', dur: 30, energy: 'mid', desc: '小说、散文、漫画都可以，沉浸进去' },
+    { cat: '爱好', icon: '✏️', action: '随手涂鸦/写日记', dur: 15, energy: 'low', desc: '不需要完整作品，随便画几笔或写几行' },
+    { cat: '爱好', icon: '🎮', action: '玩一会儿游戏', dur: 45, energy: 'mid', desc: '适度游戏，定个闹钟避免沉迷' },
+    { cat: '爱好', icon: '📷', action: '整理/修照片', dur: 20, energy: 'low', desc: '挑几张今天或最近拍的照片，调个滤镜' },
+
+    // ─ 家务 ─
+    { cat: '家务', icon: '🧹', action: '打扫一个区域', dur: 20, energy: 'mid', desc: '客厅/卧室/厨房，选一个重点打扫' },
+    { cat: '家务', icon: '👕', action: '洗衣服 + 晾衣', dur: 15, energy: 'low', desc: '扔进洗衣机，晾好就行' },
+    { cat: '家务', icon: '🗑️', action: '倒垃圾 + 整理桌面', dur: 10, energy: 'low', desc: '顺手的事，快速完成' },
+    { cat: '家务', icon: '🧽', action: '深度清洁（厨房/卫生间）', dur: 30, energy: 'high', desc: '每周一次，选一个区域彻底清洁' },
+
+    // ─ 个人护理 ─
+    { cat: '个人护理', icon: '🧴', action: '护肤 + 身体护理', dur: 20, energy: 'low', desc: '涂脸霜、护手霜、身体乳，犒劳一下自己' },
+    { cat: '个人护理', icon: '💇', action: '洗头 + 吹干造型', dur: 25, energy: 'mid', desc: '第二天出门不用再赶' },
+    { cat: '个人护理', icon: '💅', action: '修剪指甲/整理仪容', dur: 10, energy: 'low', desc: '边看视频边修剪，轻松搞定' },
+    { cat: '个人护理', icon: '💆', action: '颈部/肩部按摩', dur: 10, energy: 'low', desc: '用筋膜枪或手法，放松紧绷的肩颈' },
+
+    // ─ 陪伴 ─
+    { cat: '陪伴', icon: '💬', action: '和家人/伴侣聊天', dur: 30, energy: 'low', desc: '放下手机，好好聊聊天' },
+    { cat: '陪伴', icon: '📞', action: '给爸妈打电话', dur: 20, energy: 'low', desc: '问问他们今天过得怎么样' },
+    { cat: '陪伴', icon: '🎮', action: '和伴侣一起玩游戏/看剧', dur: 45, energy: 'mid', desc: '选一个两个人都喜欢的活动' },
+    { cat: '陪伴', icon: '🐕', action: '遛宠物/陪宠物玩', dur: 20, energy: 'low', desc: '带毛孩子出去走走或在家互动' },
+
+    // ─ 杂务 ─
+    { cat: '杂务', icon: '💳', action: '处理账单/缴费', dur: 10, energy: 'low', desc: '水电煤气、信用卡，一次搞定' },
+    { cat: '杂务', icon: '📦', action: '拆快递/退换货', dur: 15, energy: 'low', desc: '把积压的快递都拆了，该退的退了' },
+    { cat: '杂务', icon: '📋', action: '整理待办清单', dur: 10, energy: 'low', desc: '把脑子里的事都写下来，清空大脑' },
+    { cat: '杂务', icon: '🗄️', action: '整理文件/收据', dur: 15, energy: 'mid', desc: '电子或纸质文件归档，以后好找' },
+
+    // ─ 娱乐放松 ─
+    { cat: '娱乐放松', icon: '🎬', action: '看一集剧/综艺', dur: 45, energy: 'low', desc: '选一集一直想看的，放松看完' },
+    { cat: '娱乐放松', icon: '📱', action: '刷短视频/社交媒体', dur: 20, energy: 'low', desc: '定好闹钟，20分钟到就停' },
+    { cat: '娱乐放松', icon: '🎵', action: '听音乐/播客发呆', dur: 30, energy: 'low', desc: '什么都不做，只是听和放空' },
+    { cat: '娱乐放松', icon: '🧩', action: '玩益智小游戏', dur: 20, energy: 'mid', desc: '数独、拼图、文字游戏等' },
+  ];
+
+  // 精力等级排序：high > mid > low
+  const ENERGY_RANK = { high: 3, mid: 2, low: 1 };
+
+  // 从任务库中挑选匹配的任务
+  // category: 单个类别字符串 或 类别数组 或 'any' 表示不限
+  // energy: 当前精力等级
+  // maxMins: 该时段最大可用分钟数
+  // exclude: 已选任务的索引（避免重复）
+  function pickTasks(categories, energy, maxMins, exclude = []) {
+    const catList = categories === 'any'
+      ? Object.keys(TASK_LIBRARY.reduce((a, t) => { a[t.cat] = 1; return a; }, {}))
+      : Array.isArray(categories) ? categories : [categories];
+
+    const candidates = TASK_LIBRARY
+      .map((t, i) => ({ ...t, _idx: i }))
+      .filter(t => catList.includes(t.cat))
+      .filter(t => ENERGY_RANK[t.energy] <= ENERGY_RANK[energy])
+      .filter(t => !exclude.includes(t._idx));
+
+    // 按匹配度排序：精力等级越高越好，时长越接近maxMins越好
+    candidates.sort((a, b) => {
+      const eDiff = ENERGY_RANK[b.energy] - ENERGY_RANK[a.energy];
+      if (eDiff !== 0) return eDiff;
+      const aFit = Math.abs(a.dur - maxMins);
+      const bFit = Math.abs(b.dur - maxMins);
+      return aFit - bFit;
+    });
+
+    return candidates;
+  }
+
   /* ─── GOAL CONFIG ─── */
   const goalConfig = {
     rest: {
@@ -1329,7 +1424,6 @@
       mainLabel: '专注任务',
       blocks: (start, E) => []
     },
-
     hobby: {
       icon: '🎨', label: '爱好',
       mainLabel: '投入爱好',
@@ -1363,8 +1457,8 @@
     const u1 = timeRange(cursor, 5);
     blocks.push({
       time: u1, icon: '👋', action: '换衣服 + 收好随身物品', type: 'easy',
-      tag: '轻松', desc: '脱掉上班装，换上居家服，把包放好。立刻进入家的状态。',
-      isFirst: true
+      tag: '恢复', desc: '脱掉上班装，换上居家服，把包放好。立刻进入家的状态。',
+      cat: '恢复', isFirst: true
     });
     cursor = u1.end;
 
@@ -1372,7 +1466,7 @@
     const u2 = timeRange(cursor, 5);
     blocks.push({
       time: u2, icon: '💧', action: '喝杯水 + 简单整理', type: 'easy',
-      tag: '轻松', desc: '补充水分，顺手把桌面/沙发收拾一下。',
+      tag: '恢复', desc: '补充水分，顺手把桌面/沙发收拾一下。',
       isFirst: false
     });
     cursor = u2.end;
@@ -1387,7 +1481,7 @@
         const prep = timeRange(cursor, 10);
         blocks.push({
           time: prep, icon: '👋', action: '换衣服 + 收拾东西', type: 'easy',
-          tag: '准备', desc: '换上干净衣服，带上给爸妈的东西',
+          tag: '恢复', desc: '换上干净衣服，带上给爸妈的东西',
           isFirst: false
         });
         cursor = prep.end;
@@ -1396,7 +1490,7 @@
         const snack = timeRange(cursor, Math.min(15, homeMins - 20));
         blocks.push({
           time: snack, icon: '🍽️', action: '在家先垫一点', type: 'easy',
-          tag: '补充能量', desc: '时间充裕的话先吃点，不用饿着去父母家',
+          tag: '饮食', desc: '时间充裕的话先吃点，不用饿着去父母家',
           isFirst: false
         });
         cursor = snack.end;
@@ -1405,7 +1499,7 @@
         const depart = timeRange(parentsReturnTime, 10);
         blocks.push({
           time: depart, icon: '🚗', action: '出发去父母家', type: 'easy',
-          tag: '出发', desc: '带上给爸妈的东西，出发',
+          tag: '交通', desc: '带上给爸妈的东西，出发',
           isFirst: false
         });
         cursor = depart.end;
@@ -1413,14 +1507,14 @@
       const parentsDinner = timeRange(cursor, 90);
       blocks.push({
         time: parentsDinner, icon: '🍽️', action: '在父母家吃饭', type: 'warm',
-        tag: '家庭时光', desc: '和爸妈一起吃饭、聊天。放下手机，好好陪他们',
+        tag: '陪伴', desc: '和爸妈一起吃饭、聊天。放下手机，好好陪他们',
         isFirst: false
       });
       cursor = parentsDinner.end;
       const backHome = timeRange(cursor, 10);
       blocks.push({
         time: backHome, icon: '🏠', action: '回自己家', type: 'easy',
-        tag: '回家', desc: '安全到家，简单收拾一下',
+        tag: '恢复', desc: '安全到家，简单收拾一下',
         isFirst: false
       });
       cursor = backHome.end;
@@ -1436,7 +1530,7 @@
       const d1 = timeRange(cursor, isLow ? 20 : (isHigh ? 40 : 30));
       blocks.push({
         time: d1, icon: '🍽️', action: '独自用餐', type: 'easy',
-        tag: '补充能量', desc: '不要刷手机，好好吃饭。可以配点音乐或播客',
+        tag: '饮食', desc: '不要刷手机，好好吃饭。可以配点音乐或播客',
         isFirst: false
       });
       cursor = d1.end;
@@ -1446,79 +1540,98 @@
     const buf1 = timeRange(cursor, 10);
     blocks.push({
       time: buf1, icon: '⏸', action: '缓冲休息', type: 'rest',
-      tag: '过渡', desc: '坐着发会儿呆，让身体从"工作模式"切换出来',
+      tag: '恢复', desc: '坐着发会儿呆，让身体从"工作模式"切换出来',
       isFirst: false
     });
     cursor = buf1.end;
 
     // ── MAIN GOAL BLOCKS ──
+    const usedIdx = []; // track used task library indices to avoid repeats
+    function makeTaskBlock(tasks, mins) {
+      const actualMins = Math.min(mins, totalMins(sh, sm) - totalMins(...cursor.split(':').map(Number)));
+      if (actualMins < 5) return false;
+      // Pick best matching task, fallback to first candidate
+      let task = null;
+      for (const t of tasks) {
+        if (t.dur <= actualMins + 15) { task = t; break; } // allow 15min over
+      }
+      if (!task) task = tasks[0];
+      if (!task) return false;
+      const dur = Math.min(task.dur, actualMins);
+      const block = timeRange(cursor, dur);
+      const tr = { easy: 'tag-easy', focus: 'tag-focus', warm: 'tag-warm', rest: 'tag-rest' };
+      blocks.push({
+        time: block, icon: task.icon, action: task.action,
+        type: task.energy === 'high' ? 'focus' : (task.energy === 'mid' ? 'warm' : 'rest'),
+        tag: task.cat, desc: task.desc,
+        sub: mustDo && !usedIdx.length ? mustDo.trim().split(/[,，\n]+/).map(t => t.trim()).filter(Boolean) : [],
+        cat: task.cat,
+        isFirst: false
+      });
+      usedIdx.push(task._idx);
+      cursor = block.end;
+      return true;
+    }
+    function addBuffer(mins) {
+      const b = timeRange(cursor, mins);
+      blocks.push({ time: b, icon: '☕', action: '休息一下', type: 'rest', tag: '恢复', desc: '站起来走动，伸展一下，喝点水', cat: '恢复', isFirst: false });
+      cursor = b.end;
+    }
+
     if (goal === 'productivity') {
       if (isHigh) {
-        const b1 = timeRange(cursor, 90);
-        blocks.push({
-          time: b1, icon: '📋', action: '深度工作时段', type: 'focus',
-          tag: '专注', desc: '关掉通知，专注做最重要的1-2件事。按番茄钟节奏来。',
-          sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [],
-          isFirst: false
-        });
-        cursor = b1.end;
-        const b1buf = timeRange(cursor, 10);
-        blocks.push({ time: b1buf, icon: '☕', action: '短暂休息', type: 'rest', tag: '放松', desc: '站起来走动，伸展一下，喝点水', isFirst: false });
-        cursor = b1buf.end;
+        // 深度工作 60-90min → 缓冲 → 轻量任务 20-30min
+        const tasks = pickTasks(['学习', '杂务', '家务'], energy, 90, usedIdx);
+        makeTaskBlock(tasks, 60);
+        addBuffer(10);
+        const tasks2 = pickTasks(['学习', '杂务'], energy, 30, usedIdx);
+        makeTaskBlock(tasks2, 20);
       } else if (isMid) {
-        const b1 = timeRange(cursor, 45);
-        blocks.push({
-          time: b1, icon: '📋', action: '整理 + 轻量任务', type: 'warm',
-          tag: '适度', desc: '处理积压消息、整理待办清单、完成1件小事',
-          sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [],
-          isFirst: false
-        });
-        cursor = b1.end;
+        // 适度工作 30-45min
+        const tasks = pickTasks(['学习', '杂务', '家务'], energy, 45, usedIdx);
+        makeTaskBlock(tasks, 30);
       }
-      // 低精力：跳过生产力，直接休息
+      // low: skip productivity, go to rest
     }
 
     if (goal === 'health') {
       if (isHigh) {
-        const b1 = timeRange(cursor, 45);
-        blocks.push({ time: b1, icon: '🏃', action: '运动时间', type: 'focus', tag: '活力', desc: '跑步/健身/瑜伽，选一个动起来', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
-        cursor = b1.end;
+        // 运动 30-45min → 缓冲 → 护理 10-15min
+        const tasks = pickTasks(['恢复'], energy, 45, usedIdx);
+        makeTaskBlock(tasks, 40);
+        addBuffer(5);
+        const tasks2 = pickTasks(['个人护理', '恢复'], energy, 15, usedIdx);
+        makeTaskBlock(tasks2, 15);
       } else if (isMid) {
-        const b1 = timeRange(cursor, 25);
-        blocks.push({ time: b1, icon: '🧘', action: '轻度活动', type: 'warm', tag: '适度', desc: '散步、拉伸或室内简单活动', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
-        cursor = b1.end;
+        const tasks = pickTasks(['恢复', '个人护理'], energy, 25, usedIdx);
+        makeTaskBlock(tasks, 20);
+      } else {
+        // low energy → gentle recovery
+        const tasks = pickTasks(['恢复', '个人护理'], energy, 15, usedIdx);
+        makeTaskBlock(tasks, 15);
       }
     }
 
     if (goal === 'hobby') {
       if (isHigh) {
-        const b1 = timeRange(cursor, 60);
-        blocks.push({ time: b1, icon: '🎨', action: '沉浸爱好时间', type: 'focus', tag: '专注', desc: '画画、乐器、读书、写作——给自己一段不被打扰的时间', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
-        cursor = b1.end;
+        const tasks = pickTasks(['爱好'], energy, 60, usedIdx);
+        makeTaskBlock(tasks, 50);
       } else if (isMid) {
-        const b1 = timeRange(cursor, 30);
-        blocks.push({ time: b1, icon: '🎨', action: '随手创作', type: 'warm', tag: '适度', desc: '做一点就好，不需要完整作品', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
-        cursor = b1.end;
-      }
-    }
-
-    if (goal === 'social') {
-      if (isHigh || isMid) {
-        const b1 = timeRange(cursor, 60);
-        blocks.push({ time: b1, icon: '💬', action: scene === 'parents' ? '与父母通话' : (scene === 'couple' ? '和伴侣聊天' : '联系朋友'), type: 'warm', tag: '连接', desc: scene === 'parents' ? '给爸妈打个电话' : (scene === 'couple' ? '两个人好好聊聊天' : '视频/语音/消息联系一下'), sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
-        cursor = b1.end;
+        const tasks = pickTasks(['爱好'], energy, 30, usedIdx);
+        makeTaskBlock(tasks, 25);
+      } else {
+        const tasks = pickTasks(['爱好', '娱乐放松'], energy, 20, usedIdx);
+        makeTaskBlock(tasks, 15);
       }
     }
 
     if (goal === 'rest') {
       if (isLow) {
-        const b1 = timeRange(cursor, 50);
-        blocks.push({ time: b1, icon: '🎬', action: '无脑娱乐时间', type: 'rest', tag: '放松', desc: '刷剧/综艺/视频，不动脑子，纯放松', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
-        cursor = b1.end;
+        const tasks = pickTasks(['娱乐放松', '恢复'], energy, 50, usedIdx);
+        makeTaskBlock(tasks, 45);
       } else {
-        const b1 = timeRange(cursor, 45);
-        blocks.push({ time: b1, icon: '🎬', action: '放空娱乐', type: 'rest', tag: '休息', desc: '选一个轻松的节目，让自己彻底放松', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
-        cursor = b1.end;
+        const tasks = pickTasks(['娱乐放松', '爱好'], energy, 45, usedIdx);
+        makeTaskBlock(tasks, 40);
       }
     }
 
@@ -1527,7 +1640,7 @@
     const w1 = timeRange(cursor, windDownMins);
     blocks.push({
       time: w1, icon: '🌙', action: '晚间放松时光', type: 'rest',
-      tag: '减压', desc: isLow ? '躺着听音乐、翻翻手机、什么都不想' : '洗漱 + 放松阅读/轻度浏览',
+      tag: '娱乐放松', desc: isLow ? '躺着听音乐、翻翻手机、什么都不想' : '洗漱 + 放松阅读/轻度浏览',
       isFirst: false
     });
     cursor = w1.end;
@@ -1537,7 +1650,7 @@
       const p1 = timeRange(cursor, 15);
       blocks.push({
         time: p1, icon: '📌', action: '明日准备', type: 'easy',
-        tag: '收尾', desc: '整理背包、确认闹钟、列出明天最重要的3件事',
+        tag: '杂务', desc: '整理背包、确认闹钟、列出明天最重要的3件事',
         isFirst: false
       });
       cursor = p1.end;
@@ -1550,7 +1663,7 @@
       const bed1 = timeRange(cursor, bedMins);
       blocks.push({
         time: bed1, icon: '🛁', action: '睡前仪式', type: 'rest',
-        tag: '收尾', desc: '洗漱、关灯、写3件今天满意的事（可选）',
+        tag: '个人护理', desc: '洗漱、关灯、写3件今天满意的事（可选）',
         isFirst: false
       });
       cursor = bed1.end;
