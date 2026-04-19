@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evening Anchor — 给自己一个值得的夜晚</title>
+  <title>Evening Anchor 鈥?缁欒嚜宸变竴涓€煎緱鐨勫鏅?/title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -68,7 +68,7 @@
       z-index: 1;
     }
 
-    /* ─── HEADER ─── */
+    /* 鈹€鈹€鈹€ HEADER 鈹€鈹€鈹€ */
     .header {
       text-align: center;
       margin-bottom: 48px;
@@ -94,7 +94,7 @@
       font-weight: 300;
     }
 
-    /* ─── FORM CARD ─── */
+    /* 鈹€鈹€鈹€ FORM CARD 鈹€鈹€鈹€ */
     .form-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -131,7 +131,7 @@
       opacity: 0.85;
     }
 
-    /* ─── TIME INPUT ─── */
+    /* 鈹€鈹€鈹€ TIME INPUT 鈹€鈹€鈹€ */
     .time-input-wrap {
       position: relative;
     }
@@ -157,7 +157,7 @@
       cursor: pointer;
     }
 
-    /* ─── TEXTAREA ─── */
+    /* 鈹€鈹€鈹€ TEXTAREA 鈹€鈹€鈹€ */
     textarea {
       width: 100%;
       box-sizing: border-box;
@@ -176,7 +176,7 @@
     textarea::placeholder { color: var(--text-dim); font-style: italic; }
     textarea:focus { border-color: var(--accent-warm); }
 
-    /* ─── MUST-DO BLOCK ─── */
+    /* 鈹€鈹€鈹€ MUST-DO BLOCK 鈹€鈹€鈹€ */
     .mustdo-block {
       background: rgba(255, 184, 108, 0.08);
       border: 1.5px solid rgba(255, 184, 108, 0.35);
@@ -199,7 +199,7 @@
       line-height: 1.5;
     }
 
-    /* ─── SUBTASKS (主任务块内子项) ─── */
+    /* 鈹€鈹€鈹€ SUBTASKS (涓讳换鍔″潡鍐呭瓙椤? 鈹€鈹€鈹€ */
     .block-subtasks {
       margin-top: 12px;
       padding-top: 10px;
@@ -231,7 +231,7 @@
       margin-top: 7px;
     }
 
-    /* ─── BUTTON GROUP ─── */
+    /* 鈹€鈹€鈹€ BUTTON GROUP 鈹€鈹€鈹€ */
     .btn-group {
       display: flex;
       gap: 8px;
@@ -285,7 +285,7 @@
       font-weight: 400;
     }
 
-    /* ─── CONDITIONAL ─── */
+    /* 鈹€鈹€鈹€ CONDITIONAL 鈹€鈹€鈹€ */
     .conditional-field {
       margin-top: 14px;
       display: none;
@@ -293,7 +293,7 @@
     }
     .conditional-field.visible { display: block; }
 
-    /* ─── GENERATE BTN ─── */
+    /* 鈹€鈹€鈹€ GENERATE BTN 鈹€鈹€鈹€ */
     .generate-btn {
       width: 100%;
       margin-top: 32px;
@@ -345,7 +345,7 @@
     .generate-btn.loading .spinner { display: block; }
     .generate-btn.loading .btn-text { opacity: 0.7; }
 
-    /* ─── PLAN VIEW ─── */
+    /* 鈹€鈹€鈹€ PLAN VIEW 鈹€鈹€鈹€ */
     .plan-view {
       display: none;
       animation: fadeUp 0.5s ease-out;
@@ -386,7 +386,7 @@
       gap: 8px;
     }
 
-    /* ─── SUMMARY BAR ─── */
+    /* 鈹€鈹€鈹€ SUMMARY BAR 鈹€鈹€鈹€ */
     .summary-bar {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -423,7 +423,7 @@
       font-style: italic;
     }
 
-    /* ─── PLAN BLOCKS ─── */
+    /* 鈹€鈹€鈹€ PLAN BLOCKS 鈹€鈹€鈹€ */
     .plan-blocks {
       display: flex;
       flex-direction: column;
@@ -462,7 +462,7 @@
     .plan-block.focus::before { background: var(--accent-cool); }
     .plan-block.rest::before { background: #bb9af7; }
 
-    /* First block — highlighted start */
+    /* First block 鈥?highlighted start */
     .plan-block.first {
       border-color: rgba(255,184,108,0.4);
       background: linear-gradient(135deg, rgba(255,184,108,0.06) 0%, var(--bg-card) 60%);
@@ -491,11 +491,62 @@
       font-family: 'Noto Sans SC', sans-serif;
     }
 
+    /* 鈹€鈹€鈹€ CHECKBOX 鈹€鈹€鈹€ */
+    .block-check {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      width: 22px;
+      height: 22px;
+      appearance: none;
+      -webkit-appearance: none;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .block-check:hover {
+      border-color: var(--accent-warm);
+      background: rgba(255,184,108,0.05);
+    }
+    .block-check:checked {
+      background: var(--accent-warm);
+      border-color: var(--accent-warm);
+    }
+    .block-check:checked::after {
+      content: '鉁?;
+      color: #1a1000;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    /* Completed state */
+    .plan-block.done {
+      opacity: 0.5;
+    }
+    .plan-block.done .block-action {
+      text-decoration: line-through;
+      text-decoration-color: var(--text-dim);
+      color: var(--text-muted);
+    }
+    .plan-block.done .block-icon { opacity: 0.5; }
+    .plan-block.done .block-desc { display: none; }
+    .plan-block.done .block-subtasks { display: none; }
+    .plan-block.done .block-time .block-start { color: var(--text-dim); }
+    .plan-block.done .first-badge { display: none; }
+    .plan-block.done::before { background: var(--text-dim); }
+
     .block-main {
       display: flex;
       align-items: baseline;
       gap: 8px;
       margin-bottom: 6px;
+      padding-right: 32px;
     }
     .block-icon { font-size: 1.1rem; }
     .block-action {
@@ -504,6 +555,7 @@
       font-weight: 600;
       color: var(--text-primary);
       line-height: 1.3;
+      transition: color 0.25s, text-decoration 0.25s;
     }
     .first .block-action { color: var(--accent-warm); }
 
@@ -548,7 +600,7 @@
       animation: pulse-badge 2.5s ease-in-out infinite;
     }
 
-    /* ─── LOW POWER VERSION ─── */
+    /* 鈹€鈹€鈹€ LOW POWER VERSION 鈹€鈹€鈹€ */
     .lowpower-toggle {
       margin-top: 20px;
       text-align: center;
@@ -597,6 +649,7 @@
       opacity: 0;
       transform: translateY(8px);
       transition: opacity 0.3s, transform 0.3s;
+      position: relative;
     }
     .lowpower-block.visible { opacity: 1; transform: translateY(0); }
     .lowpower-block::before {
@@ -627,7 +680,7 @@
       font-style: italic;
     }
 
-    /* ─── FOOTER HINT ─── */
+    /* 鈹€鈹€鈹€ FOOTER HINT 鈹€鈹€鈹€ */
     .footer-note {
       text-align: center;
       font-size: 0.75rem;
@@ -636,7 +689,7 @@
       font-style: italic;
     }
 
-    /* ─── ANIMATIONS ─── */
+    /* 鈹€鈹€鈹€ ANIMATIONS 鈹€鈹€鈹€ */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -649,7 +702,7 @@
       50% { box-shadow: 0 0 0 6px rgba(255,184,108,0.12); }
     }
 
-    /* ─── DIVIDER ─── */
+    /* 鈹€鈹€鈹€ DIVIDER 鈹€鈹€鈹€ */
     .section-divider {
       display: flex;
       align-items: center;
@@ -666,7 +719,7 @@
       background: var(--border);
     }
 
-    /* ─── MOBILE COMPACT MODE ─── */
+    /* 鈹€鈹€鈹€ MOBILE COMPACT MODE 鈹€鈹€鈹€ */
     .compact-toggle {
       display: none;
       margin-bottom: 16px;
@@ -686,7 +739,7 @@
     .compact-btn:hover { border-color: var(--text-dim); color: var(--text-primary); }
     .compact-btn.active { border-color: var(--accent-cool); color: var(--accent-cool); background: rgba(122,162,247,0.08); }
 
-    /* Mobile responsive — compact adjustments */
+    /* Mobile responsive 鈥?compact adjustments */
     @media (max-width: 600px) {
       .container { padding: 28px 14px 60px; }
       .header { margin-bottom: 28px; }
@@ -697,13 +750,26 @@
 
       .compact-toggle { display: block; }
 
-      /* ── Compact block layout ── */
+      /* 鈹€鈹€ Compact block layout 鈹€鈹€ */
       .compact-mode .plan-block {
         padding: 12px 14px;
         border-radius: 10px;
       }
       .compact-mode .plan-block.first {
         padding: 12px 14px;
+      }
+      .compact-mode .block-check {
+        width: 18px;
+        height: 18px;
+        right: 12px;
+        top: 12px;
+        border-radius: 5px;
+      }
+      .compact-mode .block-check:checked::after {
+        font-size: 11px;
+      }
+      .compact-mode .block-main {
+        padding-right: 28px;
       }
       .compact-mode .first-badge {
         display: inline-flex;
@@ -744,7 +810,7 @@
         display: block;
       }
       .compact-mode .plan-block::after {
-        content: '⋯';
+        content: '鈰?;
         position: absolute;
         right: 12px;
         bottom: 8px;
@@ -753,7 +819,7 @@
         opacity: 0.5;
       }
       .compact-mode .plan-block.desc-open::after {
-        content: '∧';
+        content: '鈭?;
       }
 
       /* Subtasks in compact */
@@ -811,103 +877,103 @@
       <line x1="38" y1="26" x2="42" y2="26" stroke="#FFB86C" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
     <h1>Evening Anchor</h1>
-    <p>给自己一个值得的夜晚</p>
+    <p>缁欒嚜宸变竴涓€煎緱鐨勫鏅?/p>
   </header>
 
   <!-- FORM -->
   <div class="form-card" id="formCard">
     <div class="field">
-      <div class="field-label"><span class="emoji">🕐</span>下班到家时间</div>
+      <div class="field-label"><span class="emoji">馃晲</span>涓嬬彮鍒板鏃堕棿</div>
       <div class="time-input-wrap">
         <input type="time" id="arrivalTime" value="19:30" />
       </div>
     </div>
 
     <div class="field">
-      <div class="field-label"><span class="emoji">⚡</span>当前精力状态</div>
+      <div class="field-label"><span class="emoji">鈿?/span>褰撳墠绮惧姏鐘舵€?/div>
       <div class="btn-group" id="energyGroup">
         <button class="opt-btn" data-value="low" onclick="selectOpt(this,'energy')">
-          <span class="opt-icon">🪫</span>
-          <span>低</span>
-          <span class="sub">疲惫</span>
+          <span class="opt-icon">馃</span>
+          <span>浣?/span>
+          <span class="sub">鐤叉儷</span>
         </button>
         <button class="opt-btn selected" data-value="mid" onclick="selectOpt(this,'energy')">
-          <span class="opt-icon">🟡</span>
-          <span>中</span>
-          <span class="sub">一般</span>
+          <span class="opt-icon">馃煛</span>
+          <span>涓?/span>
+          <span class="sub">涓€鑸?/span>
         </button>
         <button class="opt-btn" data-value="high" onclick="selectOpt(this,'energy')">
-          <span class="opt-icon">🔋</span>
-          <span>高</span>
-          <span class="sub">充沛</span>
+          <span class="opt-icon">馃攱</span>
+          <span>楂?/span>
+          <span class="sub">鍏呮矝</span>
         </button>
       </div>
     </div>
 
     <div class="field">
-      <div class="field-label"><span class="emoji">🍽️</span>晚餐安排</div>
+      <div class="field-label"><span class="emoji">馃嵔锔?/span>鏅氶瀹夋帓</div>
       <div class="btn-group" id="sceneGroup">
         <button class="opt-btn selected-cool" data-value="alone" onclick="selectOpt(this,'scene')">
-          <span class="opt-icon">🍜</span>
-          <span>独自用餐</span>
+          <span class="opt-icon">馃崪</span>
+          <span>鐙嚜鐢ㄩ</span>
         </button>
         <button class="opt-btn" data-value="couple" onclick="selectOpt(this,'scene')">
-          <span class="opt-icon">💑</span>
-          <span>和伴侣吃</span>
+          <span class="opt-icon">馃拺</span>
+          <span>鍜屼即渚ｅ悆</span>
         </button>
         <button class="opt-btn" data-value="parents" onclick="selectOpt(this,'scene')">
-          <span class="opt-icon">🏠</span>
-          <span>回父母家吃</span>
+          <span class="opt-icon">馃彔</span>
+          <span>鍥炵埗姣嶅鍚?/span>
         </button>
       </div>
       <div class="conditional-field" id="parentsReturnField">
         <div style="margin-top:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <span style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">出发时间</span>
+          <span style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">鍑哄彂鏃堕棿</span>
           <input type="time" id="parentsReturnTime" value="18:30"
             style="width:120px; background:var(--bg-input);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:0.95rem;color:var(--text-primary);outline:none;"
             onfocus="this.style.borderColor='var(--accent-warm)'"
             onblur="this.style.borderColor='var(--border)'">
-          <span style="font-size:0.78rem; color:var(--text-dim);">出门去父母家的时间</span>
+          <span style="font-size:0.78rem; color:var(--text-dim);">鍑洪棬鍘荤埗姣嶅鐨勬椂闂?/span>
         </div>
       </div>
     </div>
 
     <div class="field">
-      <div class="field-label"><span class="emoji">🎯</span>今晚主目标</div>
+      <div class="field-label"><span class="emoji">馃幆</span>浠婃櫄涓荤洰鏍?/div>
       <div class="btn-group" id="goalGroup">
         <button class="opt-btn" data-value="rest" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">🛋️</span>
-          <span>休息</span>
+          <span class="opt-icon">馃泲锔?/span>
+          <span>浼戞伅</span>
         </button>
         <button class="opt-btn selected-cool" data-value="productivity" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">📋</span>
-          <span>生产力</span>
+          <span class="opt-icon">馃搵</span>
+          <span>鐢熶骇鍔?/span>
         </button>
         <button class="opt-btn" data-value="social" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">💬</span>
-          <span>社交</span>
+          <span class="opt-icon">馃挰</span>
+          <span>绀句氦</span>
         </button>
         <button class="opt-btn" data-value="hobby" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">🎨</span>
-          <span>爱好</span>
+          <span class="opt-icon">馃帹</span>
+          <span>鐖卞ソ</span>
         </button>
         <button class="opt-btn" data-value="health" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">🏃</span>
-          <span>健康</span>
+          <span class="opt-icon">馃弮</span>
+          <span>鍋ュ悍</span>
         </button>
       </div>
     </div>
 
     <div class="field">
-      <div class="field-label"><span class="emoji">⏰</span>明日重要事项</div>
+      <div class="field-label"><span class="emoji">鈴?/span>鏄庢棩閲嶈浜嬮」</div>
       <div class="btn-group two-col" id="tomorrowGroup">
         <button class="opt-btn" data-value="none" onclick="selectOpt(this,'tomorrow')">
-          <span class="opt-icon">🈚</span>
-          <span>无</span>
+          <span class="opt-icon">馃垰</span>
+          <span>鏃?/span>
         </button>
         <button class="opt-btn" data-value="has" onclick="selectOpt(this,'tomorrow')">
-          <span class="opt-icon">📌</span>
-          <span>有</span>
+          <span class="opt-icon">馃搶</span>
+          <span>鏈?/span>
         </button>
       </div>
       <div class="conditional-field" id="tomorrowTimeField">
@@ -918,19 +984,19 @@
     </div>
 
     <div class="field">
-      <div class="field-label"><span class="emoji">🔥</span>今晚必须完成的事</div>
-      <textarea id="mustDoInput" rows="3" placeholder="例如：写完项目报告初稿、给妈妈打电话、还信用卡……&#10;也可以留空"></textarea>
+      <div class="field-label"><span class="emoji">馃敟</span>浠婃櫄蹇呴』瀹屾垚鐨勪簨</div>
+      <textarea id="mustDoInput" rows="3" placeholder="渚嬪锛氬啓瀹岄」鐩姤鍛婂垵绋裤€佺粰濡堝鎵撶數璇濄€佽繕淇＄敤鍗♀€︹€?#10;涔熷彲浠ョ暀绌?></textarea>
     </div>
 
     <div class="field">
-      <div class="field-label"><span class="emoji">🌙</span>预计入睡时间</div>
+      <div class="field-label"><span class="emoji">馃寵</span>棰勮鍏ョ潯鏃堕棿</div>
       <div class="time-input-wrap">
         <input type="time" id="sleepTimeInput" value="23:00" />
       </div>
     </div>
 
     <button class="generate-btn" id="generateBtn" onclick="generatePlan()">
-      <span class="btn-text">生成我的晚间计划 →</span>
+      <span class="btn-text">鐢熸垚鎴戠殑鏅氶棿璁″垝 鈫?/span>
       <span class="spinner"></span>
     </button>
   </div>
@@ -938,16 +1004,26 @@
   <!-- PLAN VIEW -->
   <div class="plan-view" id="planView">
     <div class="plan-header">
-      <button class="back-btn" onclick="resetForm()">← 重新填写</button>
-      <div class="plan-title">📋 今晚安排</div>
+      <button class="back-btn" onclick="resetForm()">鈫?閲嶆柊濉啓</button>
+      <div class="plan-title">馃搵 浠婃櫄瀹夋帓</div>
     </div>
 
     <div class="summary-bar" id="summaryBar">
       <!-- filled by JS -->
     </div>
 
+    <div class="progress-wrap" id="progressWrap" style="display:none; margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:0.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;">瀹屾垚杩涘害</span>
+        <span id="progressText" style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent-low);">0/0</span>
+      </div>
+      <div style="height:4px;background:var(--bg-input);border-radius:4px;overflow:hidden;">
+        <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent-low),var(--accent-cool));border-radius:4px;transition:width 0.4s ease;"></div>
+      </div>
+    </div>
+
     <div class="compact-toggle">
-      <button class="compact-btn" id="compactBtn" onclick="toggleCompact()">📐 紧凑模式</button>
+      <button class="compact-btn" id="compactBtn" onclick="toggleCompact()">馃搻 绱у噾妯″紡</button>
     </div>
     <div class="plan-blocks" id="planBlocks">
       <!-- filled by JS -->
@@ -955,22 +1031,22 @@
 
     <div class="lowpower-toggle">
       <button class="lowpower-trigger" id="lowpowerToggle" onclick="toggleLowPower()">
-        <span>🔋</span>
-        <span id="lowpowerLabel">精力不支时的保底方案</span>
+        <span>馃攱</span>
+        <span id="lowpowerLabel">绮惧姏涓嶆敮鏃剁殑淇濆簳鏂规</span>
       </button>
       <div class="lowpower-section" id="lowpowerSection">
-        <div class="lowpower-header">当今晚感觉撑不住时，打开这个清单，只需要照做</div>
+        <div class="lowpower-header">褰撲粖鏅氭劅瑙夋拺涓嶄綇鏃讹紝鎵撳紑杩欎釜娓呭崟锛屽彧闇€瑕佺収鍋?/div>
         <div id="lowpowerBlocks"></div>
       </div>
     </div>
 
-    <div class="footer-note">照着第一步开始，其他的会自动到来 🌙</div>
+    <div class="footer-note">鐓х潃绗竴姝ュ紑濮嬶紝鍏朵粬鐨勪細鑷姩鍒版潵 馃寵</div>
   </div>
 
 </div>
 
 <script>
-  /* ─── STATE ─── */
+  /* 鈹€鈹€鈹€ STATE 鈹€鈹€鈹€ */
   const state = {
     energy: 'mid',
     scene: 'alone',
@@ -981,7 +1057,7 @@
     sleepTime: '23:00'
   };
 
-  /* ─── SELECT OPTION ─── */
+  /* 鈹€鈹€鈹€ SELECT OPTION 鈹€鈹€鈹€ */
   function selectOpt(el, group) {
     const parent = el.parentElement;
     parent.querySelectorAll('.opt-btn').forEach(b => {
@@ -998,7 +1074,7 @@
     }
   }
 
-  /* ─── ADD MINUTES TO TIME ─── */
+  /* 鈹€鈹€鈹€ ADD MINUTES TO TIME 鈹€鈹€鈹€ */
   function addMinutes(timeStr, mins) {
     const [h, m] = timeStr.split(':').map(Number);
     const totalMins = h * 60 + m + mins;
@@ -1007,45 +1083,45 @@
     return `${String(nh).padStart(2,'0')}:${String(nm).padStart(2,'0')}`;
   }
 
-  /* ─── TIME RANGE LABEL ─── */
+  /* 鈹€鈹€鈹€ TIME RANGE LABEL 鈹€鈹€鈹€ */
   function timeRange(start, mins) {
     const end = addMinutes(start, mins);
     return { start, end };
   }
 
-  /* ─── GOAL CONFIG ─── */
+  /* 鈹€鈹€鈹€ GOAL CONFIG 鈹€鈹€鈹€ */
   const goalConfig = {
     rest: {
-      icon: '🛋️', label: '休息',
-      mainLabel: '放松身心',
+      icon: '馃泲锔?, label: '浼戞伅',
+      mainLabel: '鏀炬澗韬績',
       blocks: (start, E) => []
     },
     productivity: {
-      icon: '📋', label: '生产力',
-      mainLabel: '专注任务',
+      icon: '馃搵', label: '鐢熶骇鍔?,
+      mainLabel: '涓撴敞浠诲姟',
       blocks: (start, E) => []
     },
     social: {
-      icon: '💬', label: '社交',
-      mainLabel: '社交连接',
+      icon: '馃挰', label: '绀句氦',
+      mainLabel: '绀句氦杩炴帴',
       blocks: (start, E) => []
     },
     hobby: {
-      icon: '🎨', label: '爱好',
-      mainLabel: '投入爱好',
+      icon: '馃帹', label: '鐖卞ソ',
+      mainLabel: '鎶曞叆鐖卞ソ',
       blocks: (start, E) => []
     },
     health: {
-      icon: '🏃', label: '健康',
-      mainLabel: '身心锻炼',
+      icon: '馃弮', label: '鍋ュ悍',
+      mainLabel: '韬績閿荤偧',
       blocks: (start, E) => []
     }
   };
 
-  /* ─── SCENE LABELS ─── */
-  const sceneLabels = { alone: '独自用餐', couple: '和伴侣吃', parents: '回父母家吃' };
+  /* 鈹€鈹€鈹€ SCENE LABELS 鈹€鈹€鈹€ */
+  const sceneLabels = { alone: '鐙嚜鐢ㄩ', couple: '鍜屼即渚ｅ悆', parents: '鍥炵埗姣嶅鍚? };
 
-  /* ─── PLAN BUILDER ─── */
+  /* 鈹€鈹€鈹€ PLAN BUILDER 鈹€鈹€鈹€ */
   function buildPlan(arrival, energy, scene, goal, tomorrow, parentsReturnTime, mustDo, sleepTime) {
     const blocks = [];
     let cursor = arrival; // 'HH:MM'
@@ -1059,25 +1135,25 @@
     const isMid = energy === 'mid';
     const hasTomorrow = tomorrow === 'has';
 
-    // ── BLOCK 1: Unwind (always first, < 5min) ──
+    // 鈹€鈹€ BLOCK 1: Unwind (always first, < 5min) 鈹€鈹€
     const u1 = timeRange(cursor, 5);
     blocks.push({
-      time: u1, icon: '👋', action: '换衣服 + 收好随身物品', type: 'easy',
-      tag: '轻松', desc: '脱掉上班装，换上居家服，把包放好。立刻进入家的状态。',
+      time: u1, icon: '馃憢', action: '鎹㈣。鏈?+ 鏀跺ソ闅忚韩鐗╁搧', type: 'easy',
+      tag: '杞绘澗', desc: '鑴辨帀涓婄彮瑁咃紝鎹笂灞呭鏈嶏紝鎶婂寘鏀惧ソ銆傜珛鍒昏繘鍏ュ鐨勭姸鎬併€?,
       isFirst: true
     });
     cursor = u1.end;
 
-    // ── BLOCK 2: Quick reset ──
+    // 鈹€鈹€ BLOCK 2: Quick reset 鈹€鈹€
     const u2 = timeRange(cursor, 5);
     blocks.push({
-      time: u2, icon: '💧', action: '喝杯水 + 简单整理', type: 'easy',
-      tag: '轻松', desc: '补充水分，顺手把桌面/沙发收拾一下。',
+      time: u2, icon: '馃挧', action: '鍠濇澂姘?+ 绠€鍗曟暣鐞?, type: 'easy',
+      tag: '杞绘澗', desc: '琛ュ厖姘村垎锛岄『鎵嬫妸妗岄潰/娌欏彂鏀舵嬀涓€涓嬨€?,
       isFirst: false
     });
     cursor = u2.end;
 
-    // ── BLOCK 3: Dinner (scene-aware) ──
+    // 鈹€鈹€ BLOCK 3: Dinner (scene-aware) 鈹€鈹€
     if (scene === 'parents' && parentsReturnTime) {
       const [rh, rm] = parentsReturnTime.split(':').map(Number);
       const [ah, am] = arrival.split(':').map(Number);
@@ -1086,8 +1162,8 @@
       if (homeMins >= 10) {
         const prep = timeRange(cursor, 10);
         blocks.push({
-          time: prep, icon: '👋', action: '换衣服 + 收拾东西', type: 'easy',
-          tag: '准备', desc: '换上干净衣服，带上给爸妈的东西',
+          time: prep, icon: '馃憢', action: '鎹㈣。鏈?+ 鏀舵嬀涓滆タ', type: 'easy',
+          tag: '鍑嗗', desc: '鎹笂骞插噣琛ｆ湇锛屽甫涓婄粰鐖稿鐨勪笢瑗?,
           isFirst: false
         });
         cursor = prep.end;
@@ -1095,8 +1171,8 @@
       if (homeMins >= 30) {
         const snack = timeRange(cursor, Math.min(15, homeMins - 20));
         blocks.push({
-          time: snack, icon: '🍽️', action: '在家先垫一点', type: 'easy',
-          tag: '补充能量', desc: '时间充裕的话先吃点，不用饿着去父母家',
+          time: snack, icon: '馃嵔锔?, action: '鍦ㄥ鍏堝灚涓€鐐?, type: 'easy',
+          tag: '琛ュ厖鑳介噺', desc: '鏃堕棿鍏呰鐨勮瘽鍏堝悆鐐癸紝涓嶇敤楗跨潃鍘荤埗姣嶅',
           isFirst: false
         });
         cursor = snack.end;
@@ -1104,88 +1180,88 @@
       if (homeMins >= 5) {
         const depart = timeRange(parentsReturnTime, 10);
         blocks.push({
-          time: depart, icon: '🚗', action: '出发去父母家', type: 'easy',
-          tag: '出发', desc: '带上给爸妈的东西，出发',
+          time: depart, icon: '馃殫', action: '鍑哄彂鍘荤埗姣嶅', type: 'easy',
+          tag: '鍑哄彂', desc: '甯︿笂缁欑埜濡堢殑涓滆タ锛屽嚭鍙?,
           isFirst: false
         });
         cursor = depart.end;
       }
       const parentsDinner = timeRange(cursor, 90);
       blocks.push({
-        time: parentsDinner, icon: '🍽️', action: '在父母家吃饭', type: 'warm',
-        tag: '家庭时光', desc: '和爸妈一起吃饭、聊天。放下手机，好好陪他们',
+        time: parentsDinner, icon: '馃嵔锔?, action: '鍦ㄧ埗姣嶅鍚冮キ', type: 'warm',
+        tag: '瀹跺涵鏃跺厜', desc: '鍜岀埜濡堜竴璧峰悆楗€佽亰澶┿€傛斁涓嬫墜鏈猴紝濂藉ソ闄粬浠?,
         isFirst: false
       });
       cursor = parentsDinner.end;
       const backHome = timeRange(cursor, 10);
       blocks.push({
-        time: backHome, icon: '🏠', action: '回自己家', type: 'easy',
-        tag: '回家', desc: '安全到家，简单收拾一下',
+        time: backHome, icon: '馃彔', action: '鍥炶嚜宸卞', type: 'easy',
+        tag: '鍥炲', desc: '瀹夊叏鍒板锛岀畝鍗曟敹鎷句竴涓?,
         isFirst: false
       });
       cursor = backHome.end;
     } else if (scene === 'couple') {
       const d1 = timeRange(cursor, 35);
       blocks.push({
-        time: d1, icon: '🍽️', action: '和伴侣一起做/吃晚餐', type: 'easy',
-        tag: '陪伴', desc: '一起做饭或者叫外卖，边吃边聊聊天',
+        time: d1, icon: '馃嵔锔?, action: '鍜屼即渚ｄ竴璧峰仛/鍚冩櫄椁?, type: 'easy',
+        tag: '闄即', desc: '涓€璧峰仛楗垨鑰呭彨澶栧崠锛岃竟鍚冭竟鑱婅亰澶?,
         isFirst: false
       });
       cursor = d1.end;
     } else {
       const d1 = timeRange(cursor, isLow ? 20 : (isHigh ? 40 : 30));
       blocks.push({
-        time: d1, icon: '🍽️', action: '独自用餐', type: 'easy',
-        tag: '补充能量', desc: '不要刷手机，好好吃饭。可以配点音乐或播客',
+        time: d1, icon: '馃嵔锔?, action: '鐙嚜鐢ㄩ', type: 'easy',
+        tag: '琛ュ厖鑳介噺', desc: '涓嶈鍒锋墜鏈猴紝濂藉ソ鍚冮キ銆傚彲浠ラ厤鐐归煶涔愭垨鎾',
         isFirst: false
       });
       cursor = d1.end;
     }
 
-    // ── BUFFER ──
+    // 鈹€鈹€ BUFFER 鈹€鈹€
     const buf1 = timeRange(cursor, 10);
     blocks.push({
-      time: buf1, icon: '⏸', action: '缓冲休息', type: 'rest',
-      tag: '过渡', desc: '坐着发会儿呆，让身体从"工作模式"切换出来',
+      time: buf1, icon: '鈴?, action: '缂撳啿浼戞伅', type: 'rest',
+      tag: '杩囨浮', desc: '鍧愮潃鍙戜細鍎垮憜锛岃韬綋浠?宸ヤ綔妯″紡"鍒囨崲鍑烘潵',
       isFirst: false
     });
     cursor = buf1.end;
 
-    // ── MAIN GOAL BLOCKS ──
+    // 鈹€鈹€ MAIN GOAL BLOCKS 鈹€鈹€
     if (goal === 'productivity') {
       if (isHigh) {
         const b1 = timeRange(cursor, 90);
         blocks.push({
-          time: b1, icon: '📋', action: '深度工作时段', type: 'focus',
-          tag: '专注', desc: '关掉通知，专注做最重要的1-2件事。按番茄钟节奏来。',
-          sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [],
+          time: b1, icon: '馃搵', action: '娣卞害宸ヤ綔鏃舵', type: 'focus',
+          tag: '涓撴敞', desc: '鍏虫帀閫氱煡锛屼笓娉ㄥ仛鏈€閲嶈鐨?-2浠朵簨銆傛寜鐣寗閽熻妭濂忔潵銆?,
+          sub: mustDo ? mustDo.trim().split(/[,锛孿n]+/).map(t=>t.trim()).filter(Boolean) : [],
           isFirst: false
         });
         cursor = b1.end;
         const b1buf = timeRange(cursor, 10);
-        blocks.push({ time: b1buf, icon: '☕', action: '短暂休息', type: 'rest', tag: '放松', desc: '站起来走动，伸展一下，喝点水', isFirst: false });
+        blocks.push({ time: b1buf, icon: '鈽?, action: '鐭殏浼戞伅', type: 'rest', tag: '鏀炬澗', desc: '绔欒捣鏉ヨ蛋鍔紝浼稿睍涓€涓嬶紝鍠濈偣姘?, isFirst: false });
         cursor = b1buf.end;
       } else if (isMid) {
         const b1 = timeRange(cursor, 45);
         blocks.push({
-          time: b1, icon: '📋', action: '整理 + 轻量任务', type: 'warm',
-          tag: '适度', desc: '处理积压消息、整理待办清单、完成1件小事',
-          sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [],
+          time: b1, icon: '馃搵', action: '鏁寸悊 + 杞婚噺浠诲姟', type: 'warm',
+          tag: '閫傚害', desc: '澶勭悊绉帇娑堟伅銆佹暣鐞嗗緟鍔炴竻鍗曘€佸畬鎴?浠跺皬浜?,
+          sub: mustDo ? mustDo.trim().split(/[,锛孿n]+/).map(t=>t.trim()).filter(Boolean) : [],
           isFirst: false
         });
         cursor = b1.end;
       }
-      // 低精力：跳过生产力，直接休息
+      // 浣庣簿鍔涳細璺宠繃鐢熶骇鍔涳紝鐩存帴浼戞伅
     }
 
     if (goal === 'health') {
       if (isHigh) {
         const b1 = timeRange(cursor, 45);
-        blocks.push({ time: b1, icon: '🏃', action: '运动时间', type: 'focus', tag: '活力', desc: '跑步/健身/瑜伽，选一个动起来', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
+        blocks.push({ time: b1, icon: '馃弮', action: '杩愬姩鏃堕棿', type: 'focus', tag: '娲诲姏', desc: '璺戞/鍋ヨ韩/鐟滀冀锛岄€変竴涓姩璧锋潵', sub: mustDo ? mustDo.trim().split(/[,锛孿n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
         cursor = b1.end;
       } else if (isMid) {
         const b1 = timeRange(cursor, 25);
-        blocks.push({ time: b1, icon: '🧘', action: '轻度活动', type: 'warm', tag: '适度', desc: '散步、拉伸或室内简单活动', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
+        blocks.push({ time: b1, icon: '馃', action: '杞诲害娲诲姩', type: 'warm', tag: '閫傚害', desc: '鏁ｆ銆佹媺浼告垨瀹ゅ唴绠€鍗曟椿鍔?, sub: mustDo ? mustDo.trim().split(/[,锛孿n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
         cursor = b1.end;
       }
     }
@@ -1193,11 +1269,11 @@
     if (goal === 'hobby') {
       if (isHigh) {
         const b1 = timeRange(cursor, 60);
-        blocks.push({ time: b1, icon: '🎨', action: '沉浸爱好时间', type: 'focus', tag: '专注', desc: '画画、乐器、读书、写作——给自己一段不被打扰的时间', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
+        blocks.push({ time: b1, icon: '馃帹', action: '娌夋蹈鐖卞ソ鏃堕棿', type: 'focus', tag: '涓撴敞', desc: '鐢荤敾銆佷箰鍣ㄣ€佽涔︺€佸啓浣溾€斺€旂粰鑷繁涓€娈典笉琚墦鎵扮殑鏃堕棿', sub: mustDo ? mustDo.trim().split(/[,锛孿n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
         cursor = b1.end;
       } else if (isMid) {
         const b1 = timeRange(cursor, 30);
-        blocks.push({ time: b1, icon: '🎨', action: '随手创作', type: 'warm', tag: '适度', desc: '做一点就好，不需要完整作品', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
+        blocks.push({ time: b1, icon: '馃帹', action: '闅忔墜鍒涗綔', type: 'warm', tag: '閫傚害', desc: '鍋氫竴鐐瑰氨濂斤紝涓嶉渶瑕佸畬鏁翠綔鍝?, sub: mustDo ? mustDo.trim().split(/[,锛孿n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
         cursor = b1.end;
       }
     }
@@ -1205,7 +1281,7 @@
     if (goal === 'social') {
       if (isHigh || isMid) {
         const b1 = timeRange(cursor, 60);
-        blocks.push({ time: b1, icon: '💬', action: scene === 'parents' ? '与父母通话' : (scene === 'couple' ? '和伴侣聊天' : '联系朋友'), type: 'warm', tag: '连接', desc: scene === 'parents' ? '给爸妈打个电话' : (scene === 'couple' ? '两个人好好聊聊天' : '视频/语音/消息联系一下'), sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
+        blocks.push({ time: b1, icon: '馃挰', action: scene === 'parents' ? '涓庣埗姣嶉€氳瘽' : (scene === 'couple' ? '鍜屼即渚ｈ亰澶? : '鑱旂郴鏈嬪弸'), type: 'warm', tag: '杩炴帴', desc: scene === 'parents' ? '缁欑埜濡堟墦涓數璇? : (scene === 'couple' ? '涓や釜浜哄ソ濂借亰鑱婂ぉ' : '瑙嗛/璇煶/娑堟伅鑱旂郴涓€涓?), sub: mustDo ? mustDo.trim().split(/[,锛孿n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
         cursor = b1.end;
       }
     }
@@ -1213,44 +1289,44 @@
     if (goal === 'rest') {
       if (isLow) {
         const b1 = timeRange(cursor, 50);
-        blocks.push({ time: b1, icon: '🎬', action: '无脑娱乐时间', type: 'rest', tag: '放松', desc: '刷剧/综艺/视频，不动脑子，纯放松', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
+        blocks.push({ time: b1, icon: '馃幀', action: '鏃犺剳濞变箰鏃堕棿', type: 'rest', tag: '鏀炬澗', desc: '鍒峰墽/缁艰壓/瑙嗛锛屼笉鍔ㄨ剳瀛愶紝绾斁鏉?, sub: mustDo ? mustDo.trim().split(/[,锛孿n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
         cursor = b1.end;
       } else {
         const b1 = timeRange(cursor, 45);
-        blocks.push({ time: b1, icon: '🎬', action: '放空娱乐', type: 'rest', tag: '休息', desc: '选一个轻松的节目，让自己彻底放松', sub: mustDo ? mustDo.trim().split(/[,，\n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
+        blocks.push({ time: b1, icon: '馃幀', action: '鏀剧┖濞变箰', type: 'rest', tag: '浼戞伅', desc: '閫変竴涓交鏉剧殑鑺傜洰锛岃鑷繁褰诲簳鏀炬澗', sub: mustDo ? mustDo.trim().split(/[,锛孿n]+/).map(t=>t.trim()).filter(Boolean) : [], isFirst: false });
         cursor = b1.end;
       }
     }
 
-    // ── EVENING WIND DOWN ──
+    // 鈹€鈹€ EVENING WIND DOWN 鈹€鈹€
     const windDownMins = isLow ? 30 : 45;
     const w1 = timeRange(cursor, windDownMins);
     blocks.push({
-      time: w1, icon: '🌙', action: '晚间放松时光', type: 'rest',
-      tag: '减压', desc: isLow ? '躺着听音乐、翻翻手机、什么都不想' : '洗漱 + 放松阅读/轻度浏览',
+      time: w1, icon: '馃寵', action: '鏅氶棿鏀炬澗鏃跺厜', type: 'rest',
+      tag: '鍑忓帇', desc: isLow ? '韬虹潃鍚煶涔愩€佺炕缈绘墜鏈恒€佷粈涔堥兘涓嶆兂' : '娲楁急 + 鏀炬澗闃呰/杞诲害娴忚',
       isFirst: false
     });
     cursor = w1.end;
 
-    // ── TOMORROW PREP ──
+    // 鈹€鈹€ TOMORROW PREP 鈹€鈹€
     if (hasTomorrow) {
       const p1 = timeRange(cursor, 15);
       blocks.push({
-        time: p1, icon: '📌', action: '明日准备', type: 'easy',
-        tag: '收尾', desc: '整理背包、确认闹钟、列出明天最重要的3件事',
+        time: p1, icon: '馃搶', action: '鏄庢棩鍑嗗', type: 'easy',
+        tag: '鏀跺熬', desc: '鏁寸悊鑳屽寘銆佺‘璁ら椆閽熴€佸垪鍑烘槑澶╂渶閲嶈鐨?浠朵簨',
         isFirst: false
       });
       cursor = p1.end;
     }
 
-    // ── BEDTIME ROUTINE ──
+    // 鈹€鈹€ BEDTIME ROUTINE 鈹€鈹€
     const remaining = totalMins(sh, sm) - totalMins(...cursor.split(':').map(Number));
     if (remaining > 0) {
       const bedMins = Math.min(remaining, 20);
       const bed1 = timeRange(cursor, bedMins);
       blocks.push({
-        time: bed1, icon: '🛁', action: '睡前仪式', type: 'rest',
-        tag: '收尾', desc: '洗漱、关灯、写3件今天满意的事（可选）',
+        time: bed1, icon: '馃泚', action: '鐫″墠浠紡', type: 'rest',
+        tag: '鏀跺熬', desc: '娲楁急銆佸叧鐏€佸啓3浠朵粖澶╂弧鎰忕殑浜嬶紙鍙€夛級',
         isFirst: false
       });
       cursor = bed1.end;
@@ -1259,7 +1335,7 @@
     return blocks;
   }
 
-  /* ─── LOW POWER PLAN ─── */
+  /* 鈹€鈹€鈹€ LOW POWER PLAN 鈹€鈹€鈹€ */
   function buildLowPowerPlan(arrival, sleepTime) {
     const blocks = [];
     let cursor = arrival;
@@ -1267,35 +1343,35 @@
     const totalMins = (h, m) => h * 60 + m;
 
     const b1 = timeRange(cursor, 5);
-    blocks.push({ time: b1, action: '换衣服、坐下', note: '不需要做任何事，只是换好衣服' });
+    blocks.push({ time: b1, action: '鎹㈣。鏈嶃€佸潗涓?, note: '涓嶉渶瑕佸仛浠讳綍浜嬶紝鍙槸鎹㈠ソ琛ｆ湇' });
     cursor = b1.end;
 
     const b2 = timeRange(cursor, 20);
-    blocks.push({ time: b2, action: '简单吃点东西', note: '热一碗汤、吃点水果，不要勉强做饭' });
+    blocks.push({ time: b2, action: '绠€鍗曞悆鐐逛笢瑗?, note: '鐑竴纰楁堡銆佸悆鐐规按鏋滐紝涓嶈鍕夊己鍋氶キ' });
     cursor = b2.end;
 
     const b3 = timeRange(cursor, 30);
-    blocks.push({ time: b3, action: '躺着或坐着，随便干什么', note: '看手机、听歌、什么都不干都行' });
+    blocks.push({ time: b3, action: '韬虹潃鎴栧潗鐫€锛岄殢渚垮共浠€涔?, note: '鐪嬫墜鏈恒€佸惉姝屻€佷粈涔堥兘涓嶅共閮借' });
     cursor = b3.end;
 
     const b4 = timeRange(cursor, 15);
-    blocks.push({ time: b4, action: '简单洗漱', note: '刷牙、洗脸就够了' });
+    blocks.push({ time: b4, action: '绠€鍗曟礂婕?, note: '鍒风墮銆佹礂鑴稿氨澶熶簡' });
     cursor = b4.end;
 
     const b5 = timeRange(cursor, 10);
-    blocks.push({ time: b5, action: '关灯，躺下', note: '睡不着也没关系，躺着就是休息' });
+    blocks.push({ time: b5, action: '鍏崇伅锛岃汉涓?, note: '鐫′笉鐫€涔熸病鍏崇郴锛岃汉鐫€灏辨槸浼戞伅' });
     cursor = b5.end;
 
     return blocks;
   }
 
-  /* ─── TAG CLASS ─── */
+  /* 鈹€鈹€鈹€ TAG CLASS 鈹€鈹€鈹€ */
   function tagClass(type) {
     const map = { easy: 'tag-easy', focus: 'tag-focus', warm: 'tag-warm', rest: 'tag-rest' };
     return map[type] || '';
   }
 
-  /* ─── GENERATE ─── */
+  /* 鈹€鈹€鈹€ GENERATE 鈹€鈹€鈹€ */
   function generatePlan() {
     const btn = document.getElementById('generateBtn');
     btn.classList.add('loading');
@@ -1315,6 +1391,8 @@
 
       document.getElementById('formCard').classList.add('hidden');
       document.getElementById('planView').classList.add('visible');
+      document.getElementById('progressWrap').style.display = 'block';
+      updateProgress();
       btn.classList.remove('loading');
       btn.disabled = false;
 
@@ -1332,7 +1410,7 @@
     }, 900);
   }
 
-  /* ─── RENDER PLAN ─── */
+  /* 鈹€鈹€鈹€ RENDER PLAN 鈹€鈹€鈹€ */
   function renderPlan(arrival, mainPlan, lowPower, sleepTime, mustDo) {
     // Summary
     const [ah, am] = arrival.split(':').map(Number);
@@ -1340,32 +1418,32 @@
     const totalMins = (sh * 60 + sm) - (ah * 60 + am);
     const hrs = Math.floor(totalMins / 60);
     const mins = totalMins % 60;
-    const energyLabel = { low: '🪫 低', mid: '🟡 中', high: '🔋 高' };
+    const energyLabel = { low: '馃 浣?, mid: '馃煛 涓?, high: '馃攱 楂? };
     const goalLabel = goalConfig[state.goal]?.label || state.goal;
 
     document.getElementById('summaryBar').innerHTML = `
       <div class="summary-item">
-        <span class="summary-label">到家</span>
+        <span class="summary-label">鍒板</span>
         <span class="summary-value">${arrival}</span>
       </div>
       <div class="summary-sep"></div>
       <div class="summary-item">
-        <span class="summary-label">可用时间</span>
-        <span class="summary-value">${hrs}小时${mins > 0 ? mins + '分' : ''}</span>
+        <span class="summary-label">鍙敤鏃堕棿</span>
+        <span class="summary-value">${hrs}灏忔椂${mins > 0 ? mins + '鍒? : ''}</span>
       </div>
       <div class="summary-sep"></div>
       <div class="summary-item">
-        <span class="summary-label">精力</span>
+        <span class="summary-label">绮惧姏</span>
         <span class="summary-value">${energyLabel[state.energy]}</span>
       </div>
       <div class="summary-sep"></div>
       <div class="summary-item">
-        <span class="summary-label">目标</span>
+        <span class="summary-label">鐩爣</span>
         <span class="summary-value">${goalConfig[state.goal]?.icon || ''} ${goalLabel}</span>
       </div>
       <div class="summary-sep"></div>
       <div class="summary-item">
-        <span class="summary-label">入睡</span>
+        <span class="summary-label">鍏ョ潯</span>
         <span class="summary-value">${sleepTime || '23:00'}</span>
       </div>
       <span class="summary-hint">${sceneLabels[state.scene]}</span>
@@ -1375,18 +1453,19 @@
     const blocksHtml = mainPlan.map((b, i) => {
       const subHtml = (b.sub && b.sub.length)
         ? `<div class="block-subtasks">
-             <div class="subtasks-label">🔥 今晚必须完成</div>
+             <div class="subtasks-label">馃敟 浠婃櫄蹇呴』瀹屾垚</div>
              ${b.sub.map(t => `<div class="subtask-item"><span class="subtask-dot"></span>${t}</div>`).join('')}
            </div>`
         : '';
       return `
       <div class="plan-block ${b.type} ${i === 0 ? 'first' : ''}">
-        ${i === 0 ? '<div class="first-badge">▶ 第一步，从这里开始</div>' : ''}
+        <input type="checkbox" class="block-check" onclick="toggleBlockDone(this)" />
+        ${i === 0 ? '<div class="first-badge">鈻?绗竴姝ワ紝浠庤繖閲屽紑濮?/div>' : ''}
         <div class="block-time">
           <span class="block-start">${b.time.start}</span>
-          <span style="color:var(--text-dim)">→</span>
+          <span style="color:var(--text-dim)">鈫?/span>
           <span class="block-end">${b.time.end}</span>
-          <span class="block-duration">${parseTime(b.time.end) - parseTime(b.time.start)}分钟</span>
+          <span class="block-duration">${parseTime(b.time.end) - parseTime(b.time.start)}鍒嗛挓</span>
         </div>
         <div class="block-main">
           <span class="block-icon">${b.icon}</span>
@@ -1405,7 +1484,8 @@
     // Low power blocks
     const lpHtml = lowPower.map(b => `
       <div class="lowpower-block">
-        <span class="lowpower-time">${b.time.start} – ${b.time.end}</span>
+        <input type="checkbox" class="block-check" onclick="toggleLowDone(this)" style="position:absolute;right:12px;top:10px;width:18px;height:18px;appearance:none;-webkit-appearance:none;border:2px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;" />
+        <span class="lowpower-time">${b.time.start} 鈥?${b.time.end}</span>
         <span class="lowpower-action">${b.action}</span>
         <div class="lowpower-note">${b.note}</div>
       </div>
@@ -1415,7 +1495,7 @@
 
     // Reset lowpower toggle
     document.getElementById('lowpowerSection').classList.remove('visible');
-    document.getElementById('lowpowerLabel').textContent = '精力不支时的保底方案';
+    document.getElementById('lowpowerLabel').textContent = '绮惧姏涓嶆敮鏃剁殑淇濆簳鏂规';
   }
 
   function parseTime(t) {
@@ -1423,21 +1503,26 @@
     return h * 60 + m;
   }
 
-  /* ─── TOGGLE LOW POWER ─── */
+  /* 鈹€鈹€鈹€ TOGGLE LOW POWER 鈹€鈹€鈹€ */
   function toggleLowPower() {
     const sec = document.getElementById('lowpowerSection');
     const label = document.getElementById('lowpowerLabel');
     const isOpen = sec.classList.toggle('visible');
-    label.textContent = isOpen ? '收起保底方案 ↑' : '精力不支时的保底方案';
+    label.textContent = isOpen ? '鏀惰捣淇濆簳鏂规 鈫? : '绮惧姏涓嶆敮鏃剁殑淇濆簳鏂规';
   }
 
-  /* ─── RESET ─── */
+  /* 鈹€鈹€鈹€ RESET 鈹€鈹€鈹€ */
   function resetForm() {
     document.getElementById('planView').classList.remove('visible');
     document.getElementById('formCard').classList.remove('hidden');
+    document.getElementById('progressWrap').style.display = 'none';
+    isCompact = false;
+    document.getElementById('planView').classList.remove('compact-mode');
+    document.getElementById('compactBtn').classList.remove('active');
+    document.getElementById('compactBtn').textContent = '馃搻 绱у噾妯″紡';
   }
 
-  /* ─── COMPACT MODE ─── */
+  /* 鈹€鈹€鈹€ COMPACT MODE 鈹€鈹€鈹€ */
   let isCompact = false;
   function toggleCompact() {
     isCompact = !isCompact;
@@ -1445,18 +1530,54 @@
     const btn = document.getElementById('compactBtn');
     view.classList.toggle('compact-mode', isCompact);
     btn.classList.toggle('active', isCompact);
-    btn.textContent = isCompact ? '📐 展开模式' : '📐 紧凑模式';
+    btn.textContent = isCompact ? '馃搻 灞曞紑妯″紡' : '馃搻 绱у噾妯″紡';
   }
 
-  /* ─── BLOCK DESC TOGGLE (compact mode) ─── */
+  /* 鈹€鈹€鈹€ BLOCK DESC TOGGLE (compact mode) 鈹€鈹€鈹€ */
   document.addEventListener('click', function(e) {
     if (!isCompact) return;
     const block = e.target.closest('.plan-block');
     if (!block) return;
-    // Don't toggle if clicking subtasks area
+    // Don't toggle if clicking checkbox or subtasks area
+    if (e.target.closest('.block-check')) return;
     if (e.target.closest('.block-subtasks')) return;
     block.classList.toggle('desc-open');
   });
+
+  /* 鈹€鈹€鈹€ CHECKBOX TOGGLE 鈹€鈹€鈹€ */
+  function toggleBlockDone(cb) {
+    const block = cb.closest('.plan-block');
+    block.classList.toggle('done', cb.checked);
+    updateProgress();
+  }
+  function toggleLowDone(cb) {
+    const block = cb.closest('.lowpower-block');
+    if (cb.checked) {
+      block.style.opacity = '0.4';
+      block.style.textDecoration = 'line-through';
+      block.style.color = 'var(--text-dim)';
+    } else {
+      block.style.opacity = '1';
+      block.style.textDecoration = 'none';
+      block.style.color = '';
+    }
+    if (cb.style.cssText) {
+      // Update checked style
+      cb.style.background = cb.checked ? 'var(--accent-low)' : 'transparent';
+      cb.style.borderColor = cb.checked ? 'var(--accent-low)' : 'var(--border)';
+    }
+  }
+
+  /* 鈹€鈹€鈹€ PROGRESS BAR 鈹€鈹€鈹€ */
+  function updateProgress() {
+    const total = document.querySelectorAll('#planBlocks .plan-block').length;
+    const done = document.querySelectorAll('#planBlocks .plan-block.done').length;
+    const bar = document.getElementById('progressBar');
+    if (!bar) return;
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    bar.style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${done}/${total}`;
+  }
 </script>
 </body>
 </html>
