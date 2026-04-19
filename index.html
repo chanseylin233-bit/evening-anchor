@@ -285,52 +285,28 @@
       font-weight: 400;
     }
 
-    /* 鈹€鈹€鈹€ ENERGY BAR 鈹€鈹€鈹€ */
-    .energy-bar {
-      display: flex;
+    /* 鈹€鈹€鈹€ ENERGY GROUP (compact) 鈹€鈹€鈹€ */
+    .energy-group {
+      flex-direction: row;
       align-items: center;
-      gap: 0;
-      height: 28px;
     }
-    .energy-cell {
-      flex: 1;
-      border: none;
-      background: transparent;
-      padding: 0;
-      cursor: pointer;
-      display: flex;
-      align-items: stretch;
+    .energy-group .opt-btn {
+      flex-direction: row;
+      padding: 8px 14px;
+      gap: 6px;
+      border-radius: 8px;
+      min-width: auto;
     }
-    .energy-seg {
-      flex: 1;
-      border-radius: 3px;
-      transition: background 0.2s, box-shadow 0.2s;
+    .energy-group .opt-icon {
+      font-size: 1rem;
+      display: inline-block;
+      transform: rotate(-90deg);
     }
-    .energy-seg.low  { background: rgba(255,87,87,0.2); }
-    .energy-seg.mid  { background: rgba(255,193,7,0.2); }
-    .energy-seg.high { background: rgba(76,175,80,0.2); }
-
-    .energy-cell:first-child .energy-seg { border-radius: 5px 0 0 5px; }
-    .energy-cell:last-child .energy-seg  { border-radius: 0 5px 5px 0; }
-
-    .energy-cell.selected .energy-seg.low  { background: #ff5757; box-shadow: 0 0 8px rgba(255,87,87,0.4); }
-    .energy-cell.selected .energy-seg.mid  { background: #ffc107; box-shadow: 0 0 8px rgba(255,193,7,0.4); }
-    .energy-cell.selected .energy-seg.high { background: #4caf50; box-shadow: 0 0 8px rgba(76,175,80,0.4); }
-
-    .energy-labels {
-      display: flex;
-      gap: 12px;
-      margin-left: 10px;
-      font-size: 0.78rem;
-      color: var(--text-dim);
+    .energy-group .opt-text {
+      font-size: 0.85rem;
+      font-weight: 500;
     }
-    .energy-lbl {
-      cursor: pointer;
-      opacity: 0.5;
-      transition: opacity 0.2s;
-    }
-    .energy-lbl:hover { opacity: 0.8; }
-    .energy-lbl.selected { opacity: 1; color: var(--text-primary); font-weight: 500; }
+    .energy-group .sub { display: none; }
 
     /* 鈹€鈹€鈹€ CONDITIONAL 鈹€鈹€鈹€ */
     .conditional-field {
@@ -938,21 +914,19 @@
 
     <div class="field">
       <div class="field-label"><span class="emoji">鈿?/span>褰撳墠绮惧姏鐘舵€?/div>
-      <div class="energy-bar" id="energyGroup">
-        <button class="energy-cell" data-value="low" onclick="selectOpt(this,'energy')">
-          <span class="energy-seg low"></span>
+      <div class="btn-group energy-group" id="energyGroup">
+        <button class="opt-btn" data-value="low" onclick="selectOpt(this,'energy')">
+          <span class="opt-icon">馃</span>
+          <span class="opt-text">浣?/span>
         </button>
-        <button class="energy-cell selected" data-value="mid" onclick="selectOpt(this,'energy')">
-          <span class="energy-seg mid"></span>
+        <button class="opt-btn selected" data-value="mid" onclick="selectOpt(this,'energy')">
+          <span class="opt-icon">馃煛</span>
+          <span class="opt-text">涓?/span>
         </button>
-        <button class="energy-cell" data-value="high" onclick="selectOpt(this,'energy')">
-          <span class="energy-seg high"></span>
+        <button class="opt-btn" data-value="high" onclick="selectOpt(this,'energy')">
+          <span class="opt-icon">馃攱</span>
+          <span class="opt-text">楂?/span>
         </button>
-        <div class="energy-labels">
-          <span class="energy-lbl low" onclick="pickEnergy('low')">馃 浣?/span>
-          <span class="energy-lbl mid selected" onclick="pickEnergy('mid')">馃煛 涓?/span>
-          <span class="energy-lbl high" onclick="pickEnergy('high')">馃攱 楂?/span>
-        </div>
       </div>
     </div>
 
@@ -1105,17 +1079,6 @@
 
   /* 鈹€鈹€鈹€ SELECT OPTION 鈹€鈹€鈹€ */
   function selectOpt(el, group) {
-    if (group === 'energy') {
-      // Energy bar has .energy-cell children, not .opt-btn
-      const parent = el.closest('.energy-bar');
-      parent.querySelectorAll('.energy-cell').forEach(c => c.classList.remove('selected'));
-      parent.querySelectorAll('.energy-lbl').forEach(l => l.classList.remove('selected'));
-      el.classList.add('selected');
-      // Highlight matching label
-      parent.querySelector(`.energy-lbl.${el.dataset.value}`)?.classList.add('selected');
-      state[group] = el.dataset.value;
-      return;
-    }
     const parent = el.parentElement;
     parent.querySelectorAll('.opt-btn').forEach(b => {
       b.classList.remove('selected', 'selected-cool');
@@ -1129,12 +1092,6 @@
     if (group === 'scene') {
       document.getElementById('parentsReturnField').classList.toggle('visible', state.scene === 'parents');
     }
-  }
-
-  function pickEnergy(val) {
-    const bar = document.getElementById('energyGroup');
-    const cell = bar.querySelector(`.energy-cell[data-value="${val}"]`);
-    if (cell) selectOpt(cell, 'energy');
   }
 
   /* 鈹€鈹€鈹€ ADD MINUTES TO TIME 鈹€鈹€鈹€ */
