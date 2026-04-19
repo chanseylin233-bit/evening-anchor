@@ -666,6 +666,127 @@
       background: var(--border);
     }
 
+    /* ─── MOBILE COMPACT MODE ─── */
+    .compact-toggle {
+      display: none;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .compact-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+    .compact-btn:hover { border-color: var(--text-dim); color: var(--text-primary); }
+    .compact-btn.active { border-color: var(--accent-cool); color: var(--accent-cool); background: rgba(122,162,247,0.08); }
+
+    /* Mobile responsive — compact adjustments */
+    @media (max-width: 600px) {
+      .container { padding: 28px 14px 60px; }
+      .header { margin-bottom: 28px; }
+      .header h1 { font-size: 1.8rem; }
+      .form-card { padding: 22px 18px; border-radius: 16px; }
+      .field { margin-bottom: 22px; }
+      .generate-btn { padding: 14px 20px; margin-top: 24px; border-radius: 12px; }
+
+      .compact-toggle { display: block; }
+
+      /* ── Compact block layout ── */
+      .compact-mode .plan-block {
+        padding: 12px 14px;
+        border-radius: 10px;
+      }
+      .compact-mode .plan-block.first {
+        padding: 12px 14px;
+      }
+      .compact-mode .first-badge {
+        display: inline-flex;
+        margin-bottom: 4px;
+        padding: 2px 8px;
+        font-size: 0.65rem;
+        animation: none;
+      }
+      .compact-mode .block-time {
+        margin-bottom: 0;
+        font-size: 0.68rem;
+      }
+      .compact-mode .block-start { font-size: 0.68rem; }
+      .compact-mode .block-duration { font-size: 0.62rem; padding: 0 5px; }
+      .compact-mode .block-main {
+        margin-bottom: 2px;
+        gap: 6px;
+      }
+      .compact-mode .block-icon { font-size: 0.95rem; }
+      .compact-mode .block-action {
+        font-size: 1.05rem;
+        line-height: 1.2;
+      }
+      .compact-mode .block-meta { gap: 6px; }
+      .compact-mode .block-tag {
+        font-size: 0.64rem;
+        padding: 1px 6px;
+      }
+      /* Collapsible desc */
+      .compact-mode .block-desc {
+        display: none;
+        font-size: 0.74rem;
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px dashed var(--border);
+      }
+      .compact-mode .plan-block.desc-open .block-desc {
+        display: block;
+      }
+      .compact-mode .plan-block::after {
+        content: '⋯';
+        position: absolute;
+        right: 12px;
+        bottom: 8px;
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        opacity: 0.5;
+      }
+      .compact-mode .plan-block.desc-open::after {
+        content: '∧';
+      }
+
+      /* Subtasks in compact */
+      .compact-mode .block-subtasks {
+        margin-top: 8px;
+        padding-top: 6px;
+      }
+      .compact-mode .subtasks-label { font-size: 0.65rem; margin-bottom: 4px; }
+      .compact-mode .subtask-item { font-size: 0.8rem; line-height: 1.4; }
+
+      /* Summary bar compact */
+      .compact-mode .summary-bar {
+        padding: 10px 14px;
+        gap: 10px;
+        border-radius: 10px;
+        flex-wrap: wrap;
+      }
+      .compact-mode .summary-sep { height: 24px; }
+      .compact-mode .summary-value { font-size: 0.85rem; }
+      .compact-mode .summary-label { font-size: 0.62rem; }
+      .compact-mode .summary-hint { display: none; }
+
+      /* Low power compact */
+      .compact-mode .lowpower-block { padding: 10px 14px; margin-bottom: 4px; }
+      .compact-mode .lowpower-time { font-size: 0.66rem; }
+      .compact-mode .lowpower-action { font-size: 0.82rem; }
+      .compact-mode .lowpower-note { font-size: 0.68rem; }
+
+      /* Non-compact mobile still gets some reduction */
+      .plan-block { padding: 14px 16px; }
+      .block-action { font-size: 1.15rem; }
+    }
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -825,6 +946,9 @@
       <!-- filled by JS -->
     </div>
 
+    <div class="compact-toggle">
+      <button class="compact-btn" id="compactBtn" onclick="toggleCompact()">📐 紧凑模式</button>
+    </div>
     <div class="plan-blocks" id="planBlocks">
       <!-- filled by JS -->
     </div>
@@ -1312,6 +1436,27 @@
     document.getElementById('planView').classList.remove('visible');
     document.getElementById('formCard').classList.remove('hidden');
   }
+
+  /* ─── COMPACT MODE ─── */
+  let isCompact = false;
+  function toggleCompact() {
+    isCompact = !isCompact;
+    const view = document.getElementById('planView');
+    const btn = document.getElementById('compactBtn');
+    view.classList.toggle('compact-mode', isCompact);
+    btn.classList.toggle('active', isCompact);
+    btn.textContent = isCompact ? '📐 展开模式' : '📐 紧凑模式';
+  }
+
+  /* ─── BLOCK DESC TOGGLE (compact mode) ─── */
+  document.addEventListener('click', function(e) {
+    if (!isCompact) return;
+    const block = e.target.closest('.plan-block');
+    if (!block) return;
+    // Don't toggle if clicking subtasks area
+    if (e.target.closest('.block-subtasks')) return;
+    block.classList.toggle('desc-open');
+  });
 </script>
 </body>
 </html>
