@@ -1466,6 +1466,22 @@
     { cat: '娱乐放松', icon: '📱', action: '刷短视频/社交媒体', dur: 20, energy: 'low', desc: '定好闹钟，20分钟到就停' },
     { cat: '娱乐放松', icon: '🎵', action: '听音乐/播客发呆', dur: 30, energy: 'low', desc: '什么都不做，只是听和放空' },
     { cat: '娱乐放松', icon: '🧩', action: '玩益智小游戏', dur: 20, energy: 'mid', desc: '数独、拼图、文字游戏等' },
+    { cat: '娱乐放松', icon: '📺', action: '刷B站/长视频', dur: 30, energy: 'low', desc: '选感兴趣的主题看，不追求有用' },
+    { cat: '娱乐放松', icon: '🎮', action: '玩电子游戏（适度）', dur: 45, energy: 'low', desc: '定好闹钟，到点就停' },
+    { cat: '娱乐放松', icon: '🃏', action: '玩扑克牌/接龙', dur: 20, energy: 'low', desc: '一个人玩接龙或蜘蛛纸牌，不用约人' },
+    { cat: '娱乐放松', icon: '📰', action: '刷资讯/微博/小红书', dur: 20, energy: 'low', desc: '看看今天有什么新鲜事，10分钟就刷' },
+
+    // ─ 躺平放空 ─
+    { cat: '娱乐放松', icon: '😌', action: '躺着发呆/什么都不想', dur: 20, energy: 'low', desc: '找一个舒服的姿势，让大脑完全放空' },
+    { cat: '娱乐放松', icon: '🌙', action: '关灯躺着听音乐', dur: 30, energy: 'low', desc: '关灯，戴耳机，放喜欢的歌，什么都不想' },
+    { cat: '娱乐放松', icon: '☁️', action: '看窗外发呆', dur: 15, energy: 'low', desc: '找一处窗外风景，单纯看一会儿' },
+    { cat: '娱乐放松', icon: '🛋️', action: '窝沙发放空', dur: 20, energy: 'low', desc: '裹着毯子，刷一下手机或什么都不做' },
+
+    // ─ 轻社交 ─
+    { cat: '娱乐放松', icon: '💬', action: '和朋友微信聊天', dur: 20, energy: 'low', desc: '不回工作群，和朋友随便聊聊' },
+    { cat: '娱乐放松', icon: '📞', action: '给家人打个电话', dur: 20, energy: 'low', desc: '随便聊聊，问问家里近况' },
+    { cat: '娱乐放松', icon: '🤳', action: '发朋友圈/动态', dur: 15, energy: 'low', desc: '修一张图、写几句话，分享今天的心情' },
+    { cat: '娱乐放松', icon: '🎁', action: '逛购物App（不购物）', dur: 20, energy: 'low', desc: '随便逛逛种草，不一定买，点到为止' },
 
     // ─ 写作/创作 ─
     { cat: '学习', icon: '✍️', action: '写作/写文章', dur: 45, energy: 'high', desc: '写一篇完整的文章或一段文字，完整表达一个观点' },
@@ -1830,11 +1846,20 @@
 
     if (goal === 'rest') {
       if (isLow) {
-        const tasks = pickTasks(['娱乐放松', '恢复'], energy, 50, usedIdx);
+        const tasks = pickTasks(['娱乐放松', '恢复', '陪伴'], energy, 50, usedIdx);
         makeTaskBlock(tasks, 45);
+        if (remainingUntilSleep() >= 20) {
+          const tasks2 = pickTasks(['娱乐放松', '恢复'], energy, 20, usedIdx);
+          makeTaskBlock(tasks2, 15);
+        }
       } else {
-        const tasks = pickTasks(['娱乐放松', '爱好'], energy, 45, usedIdx);
+        const tasks = pickTasks(['娱乐放松', '爱好', '恢复'], energy, 50, usedIdx);
         makeTaskBlock(tasks, 40);
+        if (remainingUntilSleep() >= 25) {
+          addBuffer(5);
+          const tasks2 = pickTasks(['娱乐放松', '爱好'], energy, 20, usedIdx);
+          makeTaskBlock(tasks2, 15);
+        }
       }
     }
 
