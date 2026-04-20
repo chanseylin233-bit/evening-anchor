@@ -1,5 +1,4 @@
-const CACHE_VERSION = 'evening-anchor-' + Date.now();
-let CACHE_NAME;
+const CACHE_NAME = 'evening-anchor-v3';
 
 const PRECACHE_ASSETS = [
   './',
@@ -9,50 +8,45 @@ const PRECACHE_ASSETS = [
   './icon-512.svg'
 ];
 
-// Install: always fetch fresh, then cache
+// Install: precache the app shell.
 self.addEventListener('install', e => {
-  CACHE_NAME = CACHE_VERSION;
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache =>
-      fetch('./index.html').then(r => {
-        if (!r.ok) throw new Error('fetch failed');
-        return cache.put('./index.html', r);
-      })
-    ).catch(() => {})  // offline install: use old cache
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(PRECACHE_ASSETS))
+      .catch(() => {}) // offline install: keep any existing cache
   );
   self.skipWaiting();
 });
 
-// Activate: delete ALL old caches on every update
+// Activate: delete old Evening Anchor caches on update.
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.map(k => {
-        if (k !== CACHE_NAME) return caches.delete(k);
+        if (k.startsWith('evening-anchor-') && k !== CACHE_NAME) return caches.delete(k);
+        return undefined;
       }))
     ).then(() => self.clients.claim())
   );
 });
 
 // Fetch: NETWORK-FIRST for index.html (always get latest),
-//        CACHE-FIRST for static assets (icons, manifest)
+//        CACHE-FIRST for static assets (icons, manifest).
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
 
-  // index.html: always try network first
-  if (url.pathname === '/' || url.pathname === '/index.html') {
+  if (url.pathname === '/' || url.pathname.endsWith('/index.html')) {
     e.respondWith(
       fetch(e.request).then(res => {
         const clone = res.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
         return res;
-      }).catch(() => caches.match(e.request))
+      }).catch(() => caches.match(e.request).then(res => res || caches.match('./index.html')))
     );
     return;
   }
 
-  // Static assets: cache-first
   e.respondWith(
     caches.match(e.request).then(r => r || fetch(e.request).then(res => {
       const clone = res.clone();
