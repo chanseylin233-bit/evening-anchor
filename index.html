@@ -1305,18 +1305,48 @@
   }
 
   /* ─── ADD MINUTES TO TIME ─── */
-  function addMinutes(timeStr, mins) {
+  // Returns { time: 'HH:MM', crossedMidnight: boolean }
+  // crossedMidnight indicates if we passed midnight during the addition
+  function addMinutesWithFlag(timeStr, mins) {
     const [h, m] = timeStr.split(':').map(Number);
     const totalMins = h * 60 + m + mins;
-    const nh = Math.floor(totalMins / 60) % 24;
+    const days = Math.floor(totalMins / (24 * 60));
+    const nh = Math.floor((totalMins % (24 * 60)) / 60);
     const nm = totalMins % 60;
-    return `${String(nh).padStart(2,'0')}:${String(nm).padStart(2,'0')}`;
+    return {
+      time: `${String(nh).padStart(2,'0')}:${String(nm).padStart(2,'0')}`,
+      crossedMidnight: days > 0
+    };
+  }
+
+  function addMinutes(timeStr, mins) {
+    return addMinutesWithFlag(timeStr, mins).time;
+  }
+
+  function clockMins(timeStr) {
+    const [h, m] = timeStr.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function minutesBetween(start, end) {
+    let diff = clockMins(end) - clockMins(start);
+    if (diff < 0) diff += 24 * 60;
+    return diff;
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   /* ─── TIME RANGE LABEL ─── */
   function timeRange(start, mins) {
-    const end = addMinutes(start, mins);
-    return { start, end };
+    const result = addMinutesWithFlag(start, mins);
+    return { start, end: result.time, crossedMidnight: result.crossedMidnight };
   }
 
   /* ─── TASK LIBRARY ─── */
@@ -1444,161 +1474,148 @@
   /* ─── PLAN BUILDER ─── */
   function buildPlan(arrival, energy, scene, goal, tomorrow, parentsReturnTime, mustDo, sleepTime) {
     const blocks = [];
-    let cursor = arrival; // 'HH:MM'
-    const totalMins = (h, m) => h * 60 + m;
-    const [ah, am] = arrival.split(':').map(Number);
-    const [sh, sm] = (sleepTime || '23:00').split(':').map(Number);
-    const totalAvail = totalMins(sh, sm) - totalMins(ah, am);
+    const arrivalMins = parseTimeHM(arrival);
+    const sleepMins = parseTimeHM(sleepTime || '23:00');
+    // Handle midnight crossing: if sleep is earlier than arrival, it's tomorrow
+    const totalAvail = sleepMins <= arrivalMins 
+      ? (24 * 60 - arrivalMins) + sleepMins  // crosses midnight
+      : sleepMins - arrivalMins;             // same day
+    
+    let cursorMins = 0; // minutes since arrival (relative)
+    
+    const toTimeStr = (offsetMins) => {
+      const absMins = (arrivalMins + offsetMins) % (24 * 60);
+      const h = Math.floor(absMins / 60);
+      const m = absMins % 60;
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    };
+    
+    const elapsedSinceArrival = () => cursorMins;
+    const remainingUntilSleep = () => totalAvail - cursorMins;
 
     const isLow = energy === 'low';
     const isHigh = energy === 'high';
     const isMid = energy === 'mid';
     const hasTomorrow = tomorrow === 'has';
+    
+    function makeBlock(dur, icon, action, type, tag, desc, extra = {}) {
+      if (cursorMins + dur > totalAvail) {
+        dur = totalAvail - cursorMins;
+        if (dur < 5) return null;
+      }
+      const start = toTimeStr(cursorMins);
+      cursorMins += dur;
+      const end = toTimeStr(cursorMins);
+      return {
+        time: { start, end },
+        icon, action, type, tag, desc,
+        ...extra
+      };
+    }
 
     // ── BLOCK 1: Unwind (always first, < 5min) ──
-    const u1 = timeRange(cursor, 5);
-    blocks.push({
-      time: u1, icon: '👋', action: '换衣服 + 收好随身物品', type: 'easy',
-      tag: '恢复', desc: '脱掉上班装，换上居家服，把包放好。立刻进入家的状态。',
-      cat: '恢复', isFirst: true
-    });
-    cursor = u1.end;
+    let b = makeBlock(5, '👋', '换衣服 + 收好随身物品', 'easy', '恢复', '脱掉上班装，换上居家服，把包放好。立刻进入家的状态。', { cat: '恢复', isFirst: true });
+    if (b) blocks.push(b);
 
     // ── BLOCK 2: Quick reset ──
-    const u2 = timeRange(cursor, 5);
-    blocks.push({
-      time: u2, icon: '💧', action: '喝杯水 + 简单整理', type: 'easy',
-      tag: '恢复', desc: '补充水分，顺手把桌面/沙发收拾一下。',
-      isFirst: false
-    });
-    cursor = u2.end;
+    b = makeBlock(5, '💧', '喝杯水 + 简单整理', 'easy', '恢复', '补充水分，顺手把桌面/沙发收拾一下。');
+    if (b) blocks.push(b);
 
     // ── BLOCK 3: Dinner (scene-aware) ──
     if (scene === 'parents' && parentsReturnTime) {
-      const [rh, rm] = parentsReturnTime.split(':').map(Number);
-      const [ah, am] = arrival.split(':').map(Number);
-      const homeMins = rh * 60 + rm - (ah * 60 + am);
+      const parentsReturnMins = parseTimeHM(parentsReturnTime);
+      // Calculate time from arrival to parents return time
+      let homeMins;
+      if (parentsReturnMins <= arrivalMins) {
+        // Crosses midnight
+        homeMins = (24 * 60 - arrivalMins) + parentsReturnMins;
+      } else {
+        homeMins = parentsReturnMins - arrivalMins;
+      }
 
       if (homeMins >= 10) {
-        const prep = timeRange(cursor, 10);
-        blocks.push({
-          time: prep, icon: '👋', action: '换衣服 + 收拾东西', type: 'easy',
-          tag: '恢复', desc: '换上干净衣服，带上给爸妈的东西',
-          isFirst: false
-        });
-        cursor = prep.end;
+        b = makeBlock(10, '👋', '换衣服 + 收拾东西', 'easy', '恢复', '换上干净衣服，带上给爸妈的东西');
+        if (b) blocks.push(b);
       }
-      if (homeMins >= 30) {
-        const snack = timeRange(cursor, Math.min(15, homeMins - 20));
-        blocks.push({
-          time: snack, icon: '🍽️', action: '在家先垫一点', type: 'easy',
-          tag: '饮食', desc: '时间充裕的话先吃点，不用饿着去父母家',
-          isFirst: false
-        });
-        cursor = snack.end;
+      if (homeMins >= 30 && cursorMins < homeMins - 20) {
+        const snackDur = Math.min(15, homeMins - 20 - cursorMins);
+        if (snackDur >= 5) {
+          b = makeBlock(snackDur, '🍽️', '在家先垫一点', 'easy', '饮食', '时间充裕的话先吃点，不用饿着去父母家');
+          if (b) blocks.push(b);
+        }
       }
-      if (homeMins >= 5) {
-        const depart = timeRange(parentsReturnTime, 10);
-        blocks.push({
-          time: depart, icon: '🚗', action: '出发去父母家', type: 'easy',
-          tag: '交通', desc: '带上给爸妈的东西，出发',
-          isFirst: false
-        });
-        cursor = depart.end;
+      // Skip to parents return time
+      if (cursorMins < homeMins) {
+        cursorMins = homeMins;
       }
-      const parentsDinner = timeRange(cursor, 90);
-      blocks.push({
-        time: parentsDinner, icon: '🍽️', action: '在父母家吃饭', type: 'warm',
-        tag: '陪伴', desc: '和爸妈一起吃饭、聊天。放下手机，好好陪他们',
-        isFirst: false
-      });
-      cursor = parentsDinner.end;
-      const backHome = timeRange(cursor, 10);
-      blocks.push({
-        time: backHome, icon: '🏠', action: '回自己家', type: 'easy',
-        tag: '恢复', desc: '安全到家，简单收拾一下',
-        isFirst: false
-      });
-      cursor = backHome.end;
+      // Depart to parents
+      b = makeBlock(10, '🚗', '出发去父母家', 'easy', '交通', '带上给爸妈的东西，出发');
+      if (b) blocks.push(b);
+      // Dinner at parents
+      b = makeBlock(90, '🍽️', '在父母家吃饭', 'warm', '陪伴', '和爸妈一起吃饭、聊天。放下手机，好好陪他们');
+      if (b) blocks.push(b);
+      // Return home
+      b = makeBlock(10, '🏠', '回自己家', 'easy', '恢复', '安全到家，简单收拾一下');
+      if (b) blocks.push(b);
     } else if (scene === 'couple') {
-      const d1 = timeRange(cursor, 35);
-      blocks.push({
-        time: d1, icon: '🍽️', action: '和伴侣一起做/吃晚餐', type: 'easy',
-        tag: '陪伴', desc: '一起做饭或者叫外卖，边吃边聊聊天',
-        isFirst: false
-      });
-      cursor = d1.end;
+      b = makeBlock(35, '🍽️', '和伴侣一起做/吃晚餐', 'easy', '陪伴', '一起做饭或者叫外卖，边吃边聊聊天');
+      if (b) blocks.push(b);
     } else {
-      const d1 = timeRange(cursor, isLow ? 20 : (isHigh ? 40 : 30));
-      blocks.push({
-        time: d1, icon: '🍽️', action: '独自用餐', type: 'easy',
-        tag: '饮食', desc: '不要刷手机，好好吃饭。可以配点音乐或播客',
-        isFirst: false
-      });
-      cursor = d1.end;
+      const dinnerDur = isLow ? 20 : (isHigh ? 40 : 30);
+      b = makeBlock(dinnerDur, '🍽️', '独自用餐', 'easy', '饮食', '不要刷手机，好好吃饭。可以配点音乐或播客');
+      if (b) blocks.push(b);
     }
 
     // ── BUFFER ──
-    const buf1 = timeRange(cursor, 10);
-    blocks.push({
-      time: buf1, icon: '⏸', action: '缓冲休息', type: 'rest',
-      tag: '恢复', desc: '坐着发会儿呆，让身体从"工作模式"切换出来',
-      isFirst: false
-    });
-    cursor = buf1.end;
+    b = makeBlock(10, '⏸', '缓冲休息', 'rest', '恢复', '坐着发会儿呆，让身体从"工作模式"切换出来');
+    if (b) blocks.push(b);
 
     // ── MAIN GOAL BLOCKS ──
     const usedIdx = []; // track used task library indices to avoid repeats
     function makeTaskBlock(tasks, mins) {
-      const actualMins = Math.min(mins, totalMins(sh, sm) - totalMins(...cursor.split(':').map(Number)));
+      const actualMins = Math.min(mins, remainingUntilSleep());
       if (actualMins < 5) return false;
-      // Pick best matching task, fallback to first candidate
       let task = null;
       for (const t of tasks) {
-        if (t.dur <= actualMins + 15) { task = t; break; } // allow 15min over
+        if (t.dur <= actualMins + 15) { task = t; break; }
       }
       if (!task) task = tasks[0];
       if (!task) return false;
       const dur = Math.min(task.dur, actualMins);
-      const block = timeRange(cursor, dur);
-      const tr = { easy: 'tag-easy', focus: 'tag-focus', warm: 'tag-warm', rest: 'tag-rest' };
-      blocks.push({
-        time: block, icon: task.icon, action: task.action,
-        type: task.energy === 'high' ? 'focus' : (task.energy === 'mid' ? 'warm' : 'rest'),
-        tag: task.cat, desc: task.desc,
-        sub: mustDo && !usedIdx.length ? mustDo.trim().split(/[,，\n]+/).map(t => t.trim()).filter(Boolean) : [],
-        cat: task.cat,
-        isFirst: false
-      });
-      usedIdx.push(task._idx);
-      cursor = block.end;
-      return true;
+      b = makeBlock(dur, task.icon, task.action,
+        task.energy === 'high' ? 'focus' : (task.energy === 'mid' ? 'warm' : 'rest'),
+        task.cat, task.desc,
+        { sub: mustDo && !usedIdx.length ? mustDo.trim().split(/[,，\n]+/).map(t => t.trim()).filter(Boolean) : [], cat: task.cat }
+      );
+      if (b) {
+        usedIdx.push(task._idx);
+        blocks.push(b);
+        return true;
+      }
+      return false;
     }
     function addBuffer(mins) {
-      const b = timeRange(cursor, mins);
-      blocks.push({ time: b, icon: '☕', action: '休息一下', type: 'rest', tag: '恢复', desc: '站起来走动，伸展一下，喝点水', cat: '恢复', isFirst: false });
-      cursor = b.end;
+      if (remainingUntilSleep() < mins) mins = remainingUntilSleep();
+      if (mins < 5) return;
+      b = makeBlock(mins, '☕', '休息一下', 'rest', '恢复', '站起来走动，伸展一下，喝点水', { cat: '恢复' });
+      if (b) blocks.push(b);
     }
 
     if (goal === 'productivity') {
       if (isHigh) {
-        // 深度工作 60-90min → 缓冲 → 轻量任务 20-30min
         const tasks = pickTasks(['学习', '杂务', '家务'], energy, 90, usedIdx);
         makeTaskBlock(tasks, 60);
         addBuffer(10);
         const tasks2 = pickTasks(['学习', '杂务'], energy, 30, usedIdx);
         makeTaskBlock(tasks2, 20);
       } else if (isMid) {
-        // 适度工作 30-45min
         const tasks = pickTasks(['学习', '杂务', '家务'], energy, 45, usedIdx);
         makeTaskBlock(tasks, 30);
       }
-      // low: skip productivity, go to rest
     }
 
     if (goal === 'health') {
       if (isHigh) {
-        // 运动 30-45min → 缓冲 → 护理 10-15min
         const tasks = pickTasks(['恢复'], energy, 45, usedIdx);
         makeTaskBlock(tasks, 40);
         addBuffer(5);
@@ -1608,7 +1625,6 @@
         const tasks = pickTasks(['恢复', '个人护理'], energy, 25, usedIdx);
         makeTaskBlock(tasks, 20);
       } else {
-        // low energy → gentle recovery
         const tasks = pickTasks(['恢复', '个人护理'], energy, 15, usedIdx);
         makeTaskBlock(tasks, 15);
       }
@@ -1639,36 +1655,21 @@
 
     // ── EVENING WIND DOWN ──
     const windDownMins = isLow ? 30 : 45;
-    const w1 = timeRange(cursor, windDownMins);
-    blocks.push({
-      time: w1, icon: '🌙', action: '晚间放松时光', type: 'rest',
-      tag: '娱乐放松', desc: isLow ? '躺着听音乐、翻翻手机、什么都不想' : '洗漱 + 放松阅读/轻度浏览',
-      isFirst: false
-    });
-    cursor = w1.end;
+    b = makeBlock(windDownMins, '🌙', '晚间放松时光', 'rest', '娱乐放松', isLow ? '躺着听音乐、翻翻手机、什么都不想' : '洗漱 + 放松阅读/轻度浏览');
+    if (b) blocks.push(b);
 
     // ── TOMORROW PREP ──
     if (hasTomorrow) {
-      const p1 = timeRange(cursor, 15);
-      blocks.push({
-        time: p1, icon: '📌', action: '明日准备', type: 'easy',
-        tag: '杂务', desc: '整理背包、确认闹钟、列出明天最重要的3件事',
-        isFirst: false
-      });
-      cursor = p1.end;
+      b = makeBlock(15, '📌', '明日准备', 'easy', '杂务', '整理背包、确认闹钟、列出明天最重要的3件事');
+      if (b) blocks.push(b);
     }
 
     // ── BEDTIME ROUTINE ──
-    const remaining = totalMins(sh, sm) - totalMins(...cursor.split(':').map(Number));
-    if (remaining > 0) {
+    const remaining = remainingUntilSleep();
+    if (remaining >= 5) {
       const bedMins = Math.min(remaining, 20);
-      const bed1 = timeRange(cursor, bedMins);
-      blocks.push({
-        time: bed1, icon: '🛁', action: '睡前仪式', type: 'rest',
-        tag: '个人护理', desc: '洗漱、关灯、写3件今天满意的事（可选）',
-        isFirst: false
-      });
-      cursor = bed1.end;
+      b = makeBlock(bedMins, '🛁', '睡前仪式', 'rest', '个人护理', '洗漱、关灯、写3件今天满意的事（可选）');
+      if (b) blocks.push(b);
     }
 
     return blocks;
@@ -1677,29 +1678,52 @@
   /* ─── LOW POWER PLAN ─── */
   function buildLowPowerPlan(arrival, sleepTime) {
     const blocks = [];
-    let cursor = arrival;
-    const [sh, sm] = (sleepTime || '23:00').split(':').map(Number);
-    const totalMins = (h, m) => h * 60 + m;
+    const arrivalMins = parseTimeHM(arrival);
+    const sleepMins = parseTimeHM(sleepTime || '23:00');
+    const totalAvail = sleepMins <= arrivalMins 
+      ? (24 * 60 - arrivalMins) + sleepMins
+      : sleepMins - arrivalMins;
+    
+    let cursorMins = 0;
+    
+    const toTimeStr = (offsetMins) => {
+      const absMins = (arrivalMins + offsetMins) % (24 * 60);
+      const h = Math.floor(absMins / 60);
+      const m = absMins % 60;
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    };
+    
+    const remainingUntilSleep = () => totalAvail - cursorMins;
+    
+    function makeBlock(dur, action, note) {
+      if (cursorMins + dur > totalAvail) {
+        dur = totalAvail - cursorMins;
+        if (dur < 5) return null;
+      }
+      const start = toTimeStr(cursorMins);
+      cursorMins += dur;
+      const end = toTimeStr(cursorMins);
+      return { time: { start, end }, action, note };
+    }
 
-    const b1 = timeRange(cursor, 5);
-    blocks.push({ time: b1, action: '换衣服、坐下', note: '不需要做任何事，只是换好衣服' });
-    cursor = b1.end;
+    let b;
+    b = makeBlock(5, '换衣服、坐下', '不需要做任何事，只是换好衣服');
+    if (b) blocks.push(b);
 
-    const b2 = timeRange(cursor, 20);
-    blocks.push({ time: b2, action: '简单吃点东西', note: '热一碗汤、吃点水果，不要勉强做饭' });
-    cursor = b2.end;
+    b = makeBlock(20, '简单吃点东西', '热一碗汤、吃点水果，不要勉强做饭');
+    if (b) blocks.push(b);
 
-    const b3 = timeRange(cursor, 30);
-    blocks.push({ time: b3, action: '躺着或坐着，随便干什么', note: '看手机、听歌、什么都不干都行' });
-    cursor = b3.end;
+    b = makeBlock(30, '躺着或坐着，随便干什么', '看手机、听歌、什么都不干都行');
+    if (b) blocks.push(b);
 
-    const b4 = timeRange(cursor, 15);
-    blocks.push({ time: b4, action: '简单洗漱', note: '刷牙、洗脸就够了' });
-    cursor = b4.end;
+    b = makeBlock(15, '简单洗漱', '刷牙、洗脸就够了');
+    if (b) blocks.push(b);
 
-    const b5 = timeRange(cursor, 10);
-    blocks.push({ time: b5, action: '关灯，躺下', note: '睡不着也没关系，躺着就是休息' });
-    cursor = b5.end;
+    const remaining = remainingUntilSleep();
+    if (remaining >= 5) {
+      b = makeBlock(Math.min(remaining, 10), '关灯，躺下', '睡不着也没关系，躺着就是休息');
+      if (b) blocks.push(b);
+    }
 
     return blocks;
   }
@@ -1754,7 +1778,7 @@
     // Summary
     const [ah, am] = arrival.split(':').map(Number);
     const [sh, sm] = (sleepTime || '23:00').split(':').map(Number);
-    const totalMins = (sh * 60 + sm) - (ah * 60 + am);
+    const totalMins = minutesBetween(arrival, sleepTime || '23:00');
     const hrs = Math.floor(totalMins / 60);
     const mins = totalMins % 60;
     const energyLabel = { low: '🪫 低', mid: '🟡 中', high: '🔋 高' };
@@ -1793,7 +1817,7 @@
       const subHtml = (b.sub && b.sub.length)
         ? `<div class="block-subtasks">
              <div class="subtasks-label">🔥 今晚必须完成</div>
-             ${b.sub.map(t => `<div class="subtask-item"><span class="subtask-dot"></span>${t}</div>`).join('')}
+             ${b.sub.map(t => `<div class="subtask-item"><span class="subtask-dot"></span>${escapeHtml(t)}</div>`).join('')}
            </div>`
         : '';
       return `
@@ -1804,7 +1828,7 @@
           <span class="block-start">${b.time.start}</span>
           <span style="color:var(--text-dim)">→</span>
           <span class="block-end">${b.time.end}</span>
-          <span class="block-duration">${parseTime(b.time.end) - parseTime(b.time.start)}分钟</span>
+          <span class="block-duration">${minutesBetween(b.time.start, b.time.end)}分钟</span>
         </div>
         <div class="block-main">
           <span class="block-icon">${b.icon}</span>
@@ -1880,10 +1904,25 @@
 
   function startLiveTimer(blocks) {
     // blocks: array of {time: {start, end}} from buildPlan output
-    planBlocks = blocks.map(b => ({
-      startMins: parseTimeHM(b.time.start),
-      endMins: parseTimeHM(b.time.end)
-    }));
+    // Handle midnight crossing: normalize all times to absolute minutes
+    const firstStart = blocks.length ? parseTimeHM(blocks[0].time.start) : 0;
+    let runningTotal = firstStart;
+    
+    planBlocks = blocks.map((b, idx) => {
+      const startMins = parseTimeHM(b.time.start);
+      const endMins = parseTimeHM(b.time.end);
+      // Calculate duration from the time strings
+      let dur = endMins - startMins;
+      if (dur <= 0) dur += 24 * 60; // crosses midnight
+      
+      // Use running total for accurate positioning
+      const absStart = (idx === 0) ? startMins : runningTotal;
+      const absEnd = absStart + dur;
+      runningTotal = absEnd;
+      
+      return { startMins: absStart, endMins: absEnd };
+    });
+    
     tick();
     if (liveTimer) clearInterval(liveTimer);
     liveTimer = setInterval(tick, 15000); // every 15s
@@ -1893,7 +1932,19 @@
     const now = new Date();
     const hh = String(now.getHours()).padStart(2, '0');
     const mm = String(now.getMinutes()).padStart(2, '0');
-    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const nowClockMins = now.getHours() * 60 + now.getMinutes();
+    
+    // Determine if we need to adjust for midnight crossing
+    let nowMins = nowClockMins;
+    if (planBlocks.length) {
+      const lastEnd = planBlocks[planBlocks.length - 1].endMins;
+      const firstStart = planBlocks[0].startMins;
+      // If plan crosses midnight and we're in the post-midnight portion
+      if (lastEnd >= 24 * 60 && nowClockMins < firstStart) {
+        nowMins += 24 * 60;
+      }
+    }
+    
     document.getElementById('liveClock').textContent = `${hh}:${mm}`;
 
     const cdEl = document.getElementById('liveCountdown');
@@ -1920,7 +1971,7 @@
 
     // Mark past blocks
     for (let i = 0; i < planBlocks.length; i++) {
-      if (i < currentIdx || (currentIdx === -1 && nowMins > planBlocks[i].endMins)) {
+      if (i < currentIdx || (currentIdx === -1 && nowMins >= planBlocks[i].endMins)) {
         allBlocks[i]?.classList.add('past');
       }
     }
@@ -1955,7 +2006,7 @@
     text += `${'─'.repeat(20)}\n\n`;
 
     mainPlan.forEach(b => {
-      const dur = parseTime(b.time.end) - parseTime(b.time.start);
+      const dur = minutesBetween(b.time.start, b.time.end);
       text += `${b.time.start} → ${b.time.end}  ${b.icon} ${b.action} (${dur}分钟)\n`;
       text += `   ${b.desc}\n`;
       if (b.sub?.length) {
@@ -1990,21 +2041,34 @@
 
     const planView = document.getElementById('planView');
     const liveBar = document.getElementById('liveBar');
-
-    // Hide live bar and buttons during capture
     const planHeader = planView.querySelector('.plan-header');
-    const planBody = planView.querySelector('.plan-body');
-    planHeader.style.display = 'none';
-    liveBar.style.display = 'none';
+    const summaryBar = planView.querySelector('.summary-bar');
+    const progressWrap = planView.querySelector('#progressWrap');
+    const compactToggle = planView.querySelector('.compact-toggle');
+    const lowpowerToggle = planView.querySelector('.lowpower-toggle');
+    const footerNote = planView.querySelector('.footer-note');
 
-    html2canvas(planBody, {
+    // Elements to hide during capture
+    const toHide = [planHeader, liveBar, compactToggle, footerNote];
+    const originalDisplays = toHide.map(el => el ? el.style.display : null);
+    toHide.forEach(el => { if (el) el.style.display = 'none'; });
+
+    if (typeof html2canvas !== 'function') {
+      toHide.forEach((el, i) => { if (el) el.style.display = originalDisplays[i] || ''; });
+      btn.textContent = '🖼 导出';
+      btn.disabled = false;
+      alert('图片导出组件加载失败，请联网刷新后再试。');
+      return;
+    }
+
+    // Use the entire planView for capture
+    html2canvas(planView, {
       backgroundColor: '#FDF6EC',
       scale: 2,
       useCORS: true,
       logging: false
     }).then(canvas => {
-      planHeader.style.display = '';
-      liveBar.style.display = '';
+      toHide.forEach((el, i) => { if (el) el.style.display = originalDisplays[i] || ''; });
 
       const link = document.createElement('a');
       link.download = `晚间安排_${new Date().toISOString().slice(0,10)}.png`;
@@ -2017,10 +2081,10 @@
         btn.disabled = false;
       }, 2000);
     }).catch(() => {
-      planHeader.style.display = '';
-      liveBar.style.display = '';
+      toHide.forEach((el, i) => { if (el) el.style.display = originalDisplays[i] || ''; });
       btn.textContent = '🖼 导出';
       btn.disabled = false;
+      alert('图片导出失败，请稍后重试。');
     });
   }
 
