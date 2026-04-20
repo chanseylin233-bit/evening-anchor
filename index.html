@@ -1411,6 +1411,34 @@
     { cat: '娱乐放松', icon: '📱', action: '刷短视频/社交媒体', dur: 20, energy: 'low', desc: '定好闹钟，20分钟到就停' },
     { cat: '娱乐放松', icon: '🎵', action: '听音乐/播客发呆', dur: 30, energy: 'low', desc: '什么都不做，只是听和放空' },
     { cat: '娱乐放松', icon: '🧩', action: '玩益智小游戏', dur: 20, energy: 'mid', desc: '数独、拼图、文字游戏等' },
+
+    // ─ 写作/创作 ─
+    { cat: '学习', icon: '✍️', action: '写作/写文章', dur: 45, energy: 'high', desc: '写一篇完整的文章或一段文字，完整表达一个观点' },
+    { cat: '学习', icon: '📝', action: '写日记/随笔', dur: 20, energy: 'low', desc: '随便写几句，记录今天的事或想法' },
+    { cat: '学习', icon: '🖊️', action: '练字/手写笔记', dur: 25, energy: 'mid', desc: '选一段喜欢的内容，边抄边记' },
+    { cat: '学习', icon: '💡', action: '头脑风暴/Mind Map', dur: 30, energy: 'mid', desc: '把想法随手画成思维导图，不追求完美' },
+
+    // ─ 英语/外语 ─
+    { cat: '学习', icon: '🇬🇧', action: '学英语/背单词', dur: 30, energy: 'mid', desc: '用App或词汇书背20-30个新词，顺便复习旧词' },
+    { cat: '学习', icon: '🎧', action: '英语听力练习', dur: 20, energy: 'mid', desc: '听一段材料，边听边记生词或跟读' },
+    { cat: '学习', icon: '🗣️', action: '英语口语/跟读', dur: 20, energy: 'mid', desc: '找一段听力材料，跟读模仿发音' },
+
+    // ─ 考证/备考 ─
+    { cat: '学习', icon: '📚', action: '备考复习（看书/讲义）', dur: 45, energy: 'high', desc: '按章节系统复习，做笔记或划重点' },
+    { cat: '学习', icon: '📝', action: '做练习题/刷题', dur: 40, energy: 'high', desc: '集中刷一套题，错题做好标记' },
+    { cat: '学习', icon: '🗂️', action: '整理错题/知识点', dur: 30, energy: 'mid', desc: '把错题本翻出来，整理归类易错知识点' },
+
+    // ─ 项目/技能 ─
+    { cat: '杂务', icon: '💻', action: '做个人项目/作品集', dur: 60, energy: 'high', desc: '专注做项目，不被打断，一个番茄钟' },
+    { cat: '杂务', icon: '🛠️', action: '学一个新技术点', dur: 40, energy: 'mid', desc: '看教程或文档，实战写一个简单示例' },
+    { cat: '杂务', icon: '🔧', action: '工具软件学习/配置', dur: 30, energy: 'mid', desc: '学一个能提高效率的工具，设置好环境' },
+    { cat: '杂务', icon: '📁', action: '整理数字资产（文件/照片）', dur: 30, energy: 'mid', desc: '整理电脑/手机里的文件，归档旧照片' },
+
+    // ─ 输入/输出 ─
+    { cat: '学习', icon: '📖', action: '阅读一本书（章节）', dur: 30, energy: 'mid', desc: '选一本书读一到两章，做好批注' },
+    { cat: '学习', icon: '📰', action: '阅读资讯/深度文章', dur: 20, energy: 'low', desc: '刷资讯App，看几篇深度长文' },
+    { cat: '学习', icon: '🎓', action: '上网课/看教程视频', dur: 40, energy: 'high', desc: '找一个课程视频，边看边记笔记' },
+    { cat: '学习', icon: '📋', action: '写学习笔记/卡片笔记法', dur: 25, energy: 'mid', desc: '用卡片或App记录今天学到的关键知识点' },
   ];
 
   // 精力等级排序：high > mid > low
@@ -1687,14 +1715,22 @@
 
     if (goal === 'productivity') {
       if (isHigh) {
-        const tasks = pickTasks(['学习', '杂务', '家务'], energy, 90, usedIdx);
+        const tasks = pickTasks(['学习', '杂务'], energy, 90, usedIdx);
         makeTaskBlock(tasks, 60);
         addBuffer(10);
         const tasks2 = pickTasks(['学习', '杂务'], energy, 30, usedIdx);
         makeTaskBlock(tasks2, 20);
       } else if (isMid) {
-        const tasks = pickTasks(['学习', '杂务', '家务'], energy, 45, usedIdx);
+        const tasks = pickTasks(['学习', '杂务'], energy, 45, usedIdx);
         makeTaskBlock(tasks, 30);
+        if (remainingUntilSleep() >= 20) {
+          addBuffer(10);
+          const tasks2 = pickTasks(['杂务', '学习'], energy, 20, usedIdx);
+          makeTaskBlock(tasks2, 15);
+        }
+      } else {
+        const tasks = pickTasks(['杂务', '学习'], energy, 20, usedIdx);
+        makeTaskBlock(tasks, 15);
       }
     }
 
