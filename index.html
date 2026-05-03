@@ -1377,25 +1377,7 @@
     }
   }
 
-  /* ─── ADD MINUTES TO TIME ─── */
-  // Returns { time: 'HH:MM', crossedMidnight: boolean }
-  // crossedMidnight indicates if we passed midnight during the addition
-  function addMinutesWithFlag(timeStr, mins) {
-    const [h, m] = timeStr.split(':').map(Number);
-    const totalMins = h * 60 + m + mins;
-    const days = Math.floor(totalMins / (24 * 60));
-    const nh = Math.floor((totalMins % (24 * 60)) / 60);
-    const nm = totalMins % 60;
-    return {
-      time: `${String(nh).padStart(2,'0')}:${String(nm).padStart(2,'0')}`,
-      crossedMidnight: days > 0
-    };
-  }
-
-  function addMinutes(timeStr, mins) {
-    return addMinutesWithFlag(timeStr, mins).time;
-  }
-
+  /* ─── TIME UTILS ─── */
   function clockMins(timeStr) {
     const [h, m] = timeStr.split(':').map(Number);
     return h * 60 + m;
@@ -1416,12 +1398,6 @@
       .replace(/'/g, '&#39;');
   }
 
-  /* ─── TIME RANGE LABEL ─── */
-  function timeRange(start, mins) {
-    const result = addMinutesWithFlag(start, mins);
-    return { start, end: result.time, crossedMidnight: result.crossedMidnight };
-  }
-
   /* ─── TASK LIBRARY ─── */
   // cat: 任务类别 | dur: 默认分钟数 | energy: 最低需要精力等级
   const TASK_LIBRARY = [
@@ -1433,12 +1409,8 @@
     { cat: '饮食', icon: '🍵', action: '泡茶 + 小点心', dur: 15, energy: 'low', desc: '慢悠悠泡杯茶，配几块饼干或水果' },
 
     // ─ 恢复 ─
-    { cat: '恢复', icon: '🧘', action: '15分钟正念冥想', dur: 15, energy: 'low', desc: '找一个安静的地方坐下，专注呼吸' },
-    { cat: '恢复', icon: '😴', action: '20分钟小睡', dur: 20, energy: 'low', desc: '定好闹钟，趴在桌上或躺沙发上' },
-    { cat: '恢复', icon: '🚿', action: '洗个热水澡', dur: 20, energy: 'low', desc: '让热水冲走一天的疲惫' },
-    { cat: '恢复', icon: '🦶', action: '泡脚 + 拉伸', dur: 20, energy: 'low', desc: '热水泡脚15分钟，顺便做几组简单拉伸' },
-    { cat: '恢复', icon: '☀️', action: '户外散步15分钟', dur: 15, energy: 'mid', desc: '下楼走一圈，呼吸新鲜空气' },
-    { cat: '恢复', icon: '👂', action: '听播客/音乐闭目养神', dur: 20, energy: 'low', desc: '戴上耳机，什么都不做，只听' },
+    { cat: '恢复', icon: '🚿', action: '洗个热水澡', dur: 20, energy: 'low', desc: '让热水冲走一天的疲惫，45℃左右泡20分钟' },
+    { cat: '恢复', icon: '🦶', action: '泡脚 + 拉伸', dur: 20, energy: 'low', desc: '热水泡脚15分钟，顺手做几组简单拉伸' },
 
     // ─ 学习 ─
     { cat: '学习', icon: '📖', action: '系统学习（看课程/做题）', dur: 45, energy: 'high', desc: '打开课程视频或教材，完整学习一个章节' },
@@ -1618,26 +1590,10 @@
 
   /* ─── GOAL CONFIG ─── */
   const goalConfig = {
-    rest: {
-      icon: '🛋️', label: '休息',
-      mainLabel: '放松身心',
-      blocks: (start, E) => []
-    },
-    productivity: {
-      icon: '📋', label: '生产力',
-      mainLabel: '专注任务',
-      blocks: (start, E) => []
-    },
-    hobby: {
-      icon: '🎨', label: '爱好',
-      mainLabel: '投入爱好',
-      blocks: (start, E) => []
-    },
-    health: {
-      icon: '🏃', label: '健康',
-      mainLabel: '身心锻炼',
-      blocks: (start, E) => []
-    }
+    rest:     { icon: '🛋️', label: '休息',     mainLabel: '放松身心' },
+    productivity: { icon: '📋', label: '生产力', mainLabel: '专注任务' },
+    hobby:    { icon: '🎨', label: '爱好',     mainLabel: '投入爱好' },
+    health:   { icon: '🏃', label: '健康',     mainLabel: '身心锻炼' }
   };
 
   /* ─── SCENE LABELS ─── */
@@ -2147,11 +2103,6 @@
     startLiveTimer(mainPlan);
     // Cache for copy
     cachedPlan = { arrival, mainPlan, lowPower, sleepTime, mustDo };
-  }
-
-  function parseTime(t) {
-    const [h, m] = t.split(':').map(Number);
-    return h * 60 + m;
   }
 
   /* ─── TOGGLE LOW POWER ─── */
@@ -2690,7 +2641,7 @@
       const step = Math.round(delta / 37);
       const newIdx = Math.max(0, Math.min(items.length - 1, startIdx - step));
       track.style.transform = `translateY(calc(50% - ${newIdx * 37}px))`;
-      _highlightActive(track, newIdx, items);
+      _updateActive(track, newIdx, items);
     }, {passive: true});
     wrap.addEventListener('touchend', e => {
       if (!dragging) return;
@@ -2706,12 +2657,6 @@
       const dir = e.deltaY > 0 ? -1 : 1;
       _commitIdx(currentIdx + dir);
     }, {passive: false});
-  }
-
-  function _highlightActive(track, idx, items) {
-    track.querySelectorAll('.wheel-item').forEach((el, i) => {
-      el.classList.toggle('active', i === idx);
-    });
   }
 
   function _updateActive(track, idx, items) {
