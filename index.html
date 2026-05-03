@@ -2744,6 +2744,16 @@
     bindWheelPickers();
   }
 
+  // Fallback: delegate click on .wheel-picker → openWheel
+  document.addEventListener('click', e => {
+    const picker = e.target.closest('.wheel-picker');
+    if (!picker) return;
+    const input = picker.querySelector('input[type="time"]');
+    if (input && input.id) {
+      openWheel(input.id);
+    }
+  });
+
 </script>
 <script>
   // Register Service Worker for PWA
