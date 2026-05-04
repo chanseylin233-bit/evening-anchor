@@ -1817,84 +1817,91 @@
       b = makeBlock(blocks, cursor, totalAvail, arrivalMins, mins, '☕', '休息一下', 'rest', '恢复', '站起来走动，伸展一下，喝点水', { cat: '恢复' });
     }
 
-    if (goal === 'productivity') {
-      if (isHigh) {
-        const tasks = pickTasks(['学习', '杂务'], energy, 90, usedIdx);
-        makeTaskBlock(tasks, 60);
-        addBuffer(10);
-        const tasks2 = pickTasks(['学习', '杂务'], energy, 30, usedIdx);
-        makeTaskBlock(tasks2, 20);
-      } else if (isMid) {
-        const tasks = pickTasks(['学习', '杂务'], energy, 45, usedIdx);
-        makeTaskBlock(tasks, 30);
-        if (totalAvail - cursor.val >= 20) {
+    // ── GOAL BLOCK BUILDER ──
+    function addGoalBlocks(goal, energy) {
+      
+      if (goal === 'productivity') {
+        if (isHigh) {
+          const tasks = pickTasks(['学习', '杂务'], energy, 90, usedIdx);
+          makeTaskBlock(tasks, 60);
           addBuffer(10);
-          const tasks2 = pickTasks(['杂务', '学习'], energy, 20, usedIdx);
-          makeTaskBlock(tasks2, 15);
-        }
-      } else {
-        const tasks = pickTasks(['杂务', '学习'], energy, 20, usedIdx);
-        makeTaskBlock(tasks, 15);
-      }
-    }
-
-    if (goal === 'health') {
-      if (isHigh) {
-        const tasks = pickTasks(['运动', '恢复'], energy, 60, usedIdx);
-        makeTaskBlock(tasks, 50);
-        addBuffer(10);
-        const tasks2 = pickTasks(['个人护理', '恢复'], energy, 20, usedIdx);
-        makeTaskBlock(tasks2, 15);
-      } else if (isMid) {
-        const tasks = pickTasks(['运动', '恢复', '个人护理'], energy, 35, usedIdx);
-        makeTaskBlock(tasks, 30);
-        if (totalAvail - cursor.val >= 20) {
-          addBuffer(5);
-          const tasks2 = pickTasks(['恢复', '个人护理'], energy, 20, usedIdx);
-          makeTaskBlock(tasks2, 15);
-        }
-      } else {
-        const tasks = pickTasks(['恢复', '个人护理'], energy, 20, usedIdx);
-        makeTaskBlock(tasks, 15);
-      }
-    }
-
-    if (goal === 'hobby') {
-      if (isHigh) {
-        const tasks = pickTasks(['爱好', '运动'], energy, 90, usedIdx);
-        makeTaskBlock(tasks, 60);
-        if (totalAvail - cursor.val >= 30) {
-          addBuffer(10);
-          const tasks2 = pickTasks(['爱好', '运动'], energy, 30, usedIdx);
+          const tasks2 = pickTasks(['学习', '杂务'], energy, 30, usedIdx);
           makeTaskBlock(tasks2, 20);
+        } else if (isMid) {
+          const tasks = pickTasks(['学习', '杂务'], energy, 45, usedIdx);
+          makeTaskBlock(tasks, 30);
+          if (totalAvail - cursor.val >= 20) {
+            addBuffer(10);
+            const tasks2 = pickTasks(['杂务', '学习'], energy, 20, usedIdx);
+            makeTaskBlock(tasks2, 15);
+          }
+        } else {
+          const tasks = pickTasks(['杂务', '学习'], energy, 20, usedIdx);
+          makeTaskBlock(tasks, 15);
         }
-      } else if (isMid) {
-        const tasks = pickTasks(['爱好', '运动'], energy, 45, usedIdx);
-        makeTaskBlock(tasks, 35);
-      } else {
-        const tasks = pickTasks(['爱好', '恢复', '运动'], energy, 20, usedIdx);
-        makeTaskBlock(tasks, 15);
+      }
+
+      if (goal === 'health') {
+        if (isHigh) {
+          const tasks = pickTasks(['运动', '恢复'], energy, 60, usedIdx);
+          makeTaskBlock(tasks, 50);
+          addBuffer(10);
+          const tasks2 = pickTasks(['个人护理', '恢复'], energy, 20, usedIdx);
+          makeTaskBlock(tasks2, 15);
+        } else if (isMid) {
+          const tasks = pickTasks(['运动', '恢复', '个人护理'], energy, 35, usedIdx);
+          makeTaskBlock(tasks, 30);
+          if (totalAvail - cursor.val >= 20) {
+            addBuffer(5);
+            const tasks2 = pickTasks(['恢复', '个人护理'], energy, 20, usedIdx);
+            makeTaskBlock(tasks2, 15);
+          }
+        } else {
+          const tasks = pickTasks(['恢复', '个人护理'], energy, 20, usedIdx);
+          makeTaskBlock(tasks, 15);
+        }
+      }
+
+      if (goal === 'hobby') {
+        if (isHigh) {
+          const tasks = pickTasks(['爱好', '运动'], energy, 90, usedIdx);
+          makeTaskBlock(tasks, 60);
+          if (totalAvail - cursor.val >= 30) {
+            addBuffer(10);
+            const tasks2 = pickTasks(['爱好', '运动'], energy, 30, usedIdx);
+            makeTaskBlock(tasks2, 20);
+          }
+        } else if (isMid) {
+          const tasks = pickTasks(['爱好', '运动'], energy, 45, usedIdx);
+          makeTaskBlock(tasks, 35);
+        } else {
+          const tasks = pickTasks(['爱好', '恢复', '运动'], energy, 20, usedIdx);
+          makeTaskBlock(tasks, 15);
+        }
+      }
+
+      if (goal === 'rest') {
+        if (isLow) {
+          const tasks = pickTasks(['娱乐放松', '恢复', '陪伴'], energy, 50, usedIdx);
+          makeTaskBlock(tasks, 45);
+          if (totalAvail - cursor.val >= 20) {
+            const tasks2 = pickTasks(['娱乐放松', '恢复'], energy, 20, usedIdx);
+            makeTaskBlock(tasks2, 15);
+          }
+        } else {
+          const tasks = pickTasks(['娱乐放松', '爱好', '恢复'], energy, 50, usedIdx);
+          makeTaskBlock(tasks, 40);
+          if (totalAvail - cursor.val >= 25) {
+            addBuffer(5);
+            const tasks2 = pickTasks(['娱乐放松', '爱好'], energy, 20, usedIdx);
+            makeTaskBlock(tasks2, 15);
+          }
+        }
       }
     }
 
-    if (goal === 'rest') {
-      if (isLow) {
-        const tasks = pickTasks(['娱乐放松', '恢复', '陪伴'], energy, 50, usedIdx);
-        makeTaskBlock(tasks, 45);
-        if (totalAvail - cursor.val >= 20) {
-          const tasks2 = pickTasks(['娱乐放松', '恢复'], energy, 20, usedIdx);
-          makeTaskBlock(tasks2, 15);
-        }
-      } else {
-        const tasks = pickTasks(['娱乐放松', '爱好', '恢复'], energy, 50, usedIdx);
-        makeTaskBlock(tasks, 40);
-        if (totalAvail - cursor.val >= 25) {
-          addBuffer(5);
-          const tasks2 = pickTasks(['娱乐放松', '爱好'], energy, 20, usedIdx);
-          makeTaskBlock(tasks2, 15);
-        }
-      }
-    }
+    // ── MAIN GOAL BLOCKS ──
+    addGoalBlocks(goal, energy);
 
     // ── EVENING WIND DOWN ──
     const windDownMins = isLow ? 30 : 45;
