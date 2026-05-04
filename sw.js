@@ -1,4 +1,4 @@
-const CACHE_NAME = 'evening-anchor-v7';
+const CACHE_NAME = 'evening-anchor-v8';
 
 const PRECACHE_ASSETS = [
   './',

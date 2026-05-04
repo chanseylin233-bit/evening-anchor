@@ -1098,7 +1098,7 @@
     /* Selection */
     ::selection { background: rgba(255,184,108,0.2); color: var(--text-primary); }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- html2canvas loaded lazily on first export -->
 </head>
 <body>
 <div class="container">
@@ -1363,16 +1363,8 @@
     const nowStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
     document.getElementById('arrivalTime').value = nowStr;
 
-    // Set energy to low if midnight
-    if (h >= 23) {
-      clickOpt('energyGroup', 'low');
-    }
-
-    // Set goal to rest
-    clickOpt('goalGroup', 'rest');
-
-    // Set tomorrow to none
-    clickOpt('tomorrowGroup', 'none');
+    // Apply smart defaults in one call
+    applyDefaults(h >= 23);
 
     // Hide non-essential fields
     document.querySelectorAll('[data-late="hide"]').forEach(el => {
@@ -1383,6 +1375,16 @@
   function clickOpt(groupId, value) {
     const btn = document.querySelector(`#${groupId} [data-value="${value}"]`);
     if (btn) selectOpt(btn, groupId.replace('Group', ''));
+  }
+
+  // Apply late-night smart defaults in one shot (reduces 3 selectOpt calls -> 1)
+  function applyDefaults(forceLowEnergy) {
+    const groups = [
+      forceLowEnergy ? ['energyGroup', 'low'] : null,
+      ['goalGroup', 'rest'],
+      ['tomorrowGroup', 'none'],
+    ].filter(Boolean);
+    groups.forEach(([gid, val]) => clickOpt(gid, val));
   }
 
   function dismissLateNight() {
@@ -2250,7 +2252,7 @@
   }
 
   /* ─── EXPORT IMAGE ─── */
-  function exportImage() {
+  async function exportImage() {
     const btn = document.getElementById('exportBtn');
     btn.textContent = '⏳ 生成中…';
     btn.disabled = true;
@@ -2269,12 +2271,24 @@
     const originalDisplays = toHide.map(el => el ? el.style.display : null);
     toHide.forEach(el => { if (el) el.style.display = 'none'; });
 
+    // Lazy-load html2canvas on first use
     if (typeof html2canvas !== 'function') {
-      toHide.forEach((el, i) => { if (el) el.style.display = originalDisplays[i] || ''; });
-      btn.textContent = '🖼 导出';
-      btn.disabled = false;
-      alert('图片导出组件加载失败，请联网刷新后再试。');
-      return;
+      btn.textContent = '⏳ 加载中…';
+      try {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+          s.onload = resolve;
+          s.onerror = () => {
+            toHide.forEach((el, i) => { if (el) el.style.display = originalDisplays[i] || ''; });
+            btn.textContent = '🖼 导出';
+            btn.disabled = false;
+            alert('图片导出组件加载失败，请联网刷新后再试。');
+            reject(new Error('html2canvas load failed'));
+          };
+          document.head.appendChild(s);
+        });
+      } catch(e) { return; }  // user was alerted inside onerror
     }
 
     // Use the entire planView for capture
