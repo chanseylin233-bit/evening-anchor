@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#FDF6EC">
+  <meta name="theme-color" content="#0F0E17">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="晚间锚点">
   <meta name="description" content="你的晚间安排生成器，下班到家直接执行">
   <link rel="manifest" href="./manifest.json">
@@ -1299,7 +1299,7 @@
 
 <script>
   /* ─── STATE ─── */
-  const state = {
+  const DEFAULTS = {
     energy: 'mid',
     scene: 'alone',
     goal: 'productivity',
@@ -1308,6 +1308,40 @@
     mustDo: '',
     sleepTime: '23:00'
   };
+
+  const state = Object.assign({}, DEFAULTS, (function() {
+    try {
+      const saved = localStorage.getItem('ea_state');
+      return saved ? JSON.parse(saved) : {};
+    } catch(e) { return {}; }
+  })());
+
+  function saveState() {
+    try { localStorage.setItem('ea_state', JSON.stringify(state)); } catch(e) {}
+  }
+
+  function restoreFormUI() {
+    ['energy', 'scene', 'goal', 'tomorrow'].forEach(group => {
+      const val = state[group];
+      if (!val) return;
+      const groupId = group + 'Group';
+      const container = document.getElementById(groupId);
+      if (!container) return;
+      container.querySelectorAll('.opt-btn').forEach(b => {
+        b.classList.remove('selected', 'selected-cool');
+        if (b.dataset.value === val) {
+          b.classList.add(group === 'scene' || group === 'goal' ? 'selected-cool' : 'selected');
+        }
+      });
+    });
+    if (state.sleepTime) document.getElementById('sleepTimeInput').value = state.sleepTime;
+    if (state.tomorrowTime) document.getElementById('tomorrowTime').value = state.tomorrowTime;
+    if (state.mustDo) document.getElementById('mustDoInput').value = state.mustDo;
+    document.getElementById('tomorrowTimeField').classList.toggle('visible', state.tomorrow === 'has');
+    document.getElementById('parentsReturnField').classList.toggle('visible', state.scene === 'parents');
+  }
+
+  document.addEventListener('DOMContentLoaded', restoreFormUI);
 
   const LATE_NIGHT_HOUR = 22; // trigger at 22:00
   let lateNightMode = false;
@@ -1370,6 +1404,7 @@
     });
     el.classList.add(group === 'scene' || group === 'goal' ? 'selected-cool' : 'selected');
     state[group] = el.dataset.value;
+    saveState();
 
     if (group === 'tomorrow') {
       document.getElementById('tomorrowTimeField').classList.toggle('visible', state.tomorrow === 'has');
@@ -1931,6 +1966,7 @@
       const arrival = document.getElementById('arrivalTime').value;
       const sleepTime = document.getElementById('sleepTimeInput').value;
       const mustDo = document.getElementById('mustDoInput').value;
+      state.sleepTime = sleepTime; state.mustDo = mustDo; saveState();
       const parentsReturnTime = state.scene === 'parents'
         ? document.getElementById('parentsReturnTime').value
         : null;
@@ -2009,7 +2045,7 @@
         : '';
       return `
       <div class="plan-block ${b.type} ${i === 0 ? 'first' : ''}">
-        <input type="checkbox" class="block-check" onclick="toggleBlockDone(this)" />
+        <input type="checkbox" class="block-check" aria-label="标记完成" onclick="toggleBlockDone(this)" />
         ${i === 0 ? '<div class="first-badge">▶ 第一步，从这里开始</div>' : ''}
         <div class="block-time">
           <span class="block-start">${b.time.start}</span>
@@ -2034,7 +2070,7 @@
     // Low power blocks
     const lpHtml = lowPower.map(b => `
       <div class="lowpower-block">
-        <input type="checkbox" class="block-check" onclick="toggleLowDone(this)" />
+        <input type="checkbox" class="block-check" aria-label="标记完成" onclick="toggleLowDone(this)" />
         <span class="lowpower-time">${b.time.start} – ${b.time.end}</span>
         <span class="lowpower-action">${b.action}</span>
         <div class="lowpower-note">${b.note}</div>
