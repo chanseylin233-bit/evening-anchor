@@ -1373,14 +1373,13 @@
 
   document.addEventListener('DOMContentLoaded', restoreFormUI);
 
-  const LATE_NIGHT_HOUR = 22; // trigger at 22:00
-
   /* ─── LATE NIGHT AUTO-SIMPLIFY ─── */
   function checkLateNight() {
+    const LATE_NIGHT_START = 22; // 深夜模式起始小时 (22:00)
     const now = new Date();
     const h = now.getHours();
     const m = now.getMinutes();
-    if (h < LATE_NIGHT_HOUR) return; // daytime, skip
+    if (h < LATE_NIGHT_START) return; // daytime, skip
 
 
     // Show banner
@@ -1813,14 +1812,14 @@
         '加班': 60, '办公': 45,
       };
 
-      let best = null;
-      let bestLen = 0;
+      let matchedDuration = null;
+      let matchedKeywordLen = 0;
       for (const [kw, dur] of Object.entries(SCORE)) {
-        if (t.includes(kw) && kw.length > bestLen) {
-          best = dur; bestLen = kw.length;
+        if (t.includes(kw) && kw.length > matchedKeywordLen) {
+          matchedDuration = dur; matchedKeywordLen = kw.length;
         }
       }
-      return best;
+      return matchedDuration;
     }
 
     // ── MUST-DO BLOCK (priority if user filled it) ─────────────────
