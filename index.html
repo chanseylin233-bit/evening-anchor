@@ -1060,6 +1060,38 @@
         font-size: 1.1rem;
         padding: 16px 28px;
       }
+    .ea-toast {
+      position: fixed;
+      top: 24px; left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 500;
+      padding: 12px 24px;
+      border-radius: 12px;
+      z-index: 10000;
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+      pointer-events: none;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .ea-toast.ea-error {
+      background: #2D1B1B;
+      color: #FF9E9E;
+      border: 1px solid rgba(255,107,107,0.3);
+      box-shadow: 0 6px 24px rgba(255,107,107,0.15);
+    }
+    .ea-toast.ea-info {
+      background: #1B2A3D;
+      color: #9EC5FF;
+      border: 1px solid rgba(77,150,255,0.3);
+      box-shadow: 0 6px 24px rgba(77,150,255,0.15);
+    }
+    .ea-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
 
       /* ── 6. BUTTON GROUPS: mobile-friendly ── */
       .btn-group { gap: 6px; }
@@ -1696,42 +1728,34 @@
     b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 5, '💧', '喝杯水 + 简单整理', 'easy', '恢复', '补充水分，顺手把桌面/沙发收拾一下。');
 
     // ── BLOCK 3: Dinner (scene-aware) ──
-    if (scene === 'parents' && parentsReturnTime) {
-      const parentsReturnMins = parseTimeHM(parentsReturnTime);
-      // Calculate time from arrival to parents return time
-      let homeMins;
-      if (parentsReturnMins <= arrivalMins) {
-        // Crosses midnight
-        homeMins = (24 * 60 - arrivalMins) + parentsReturnMins;
-      } else {
-        homeMins = parentsReturnMins - arrivalMins;
-      }
-
-      if (homeMins >= 10) {
-        b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '👋', '换衣服 + 收拾东西', 'easy', '恢复', '换上干净衣服，带上给爸妈的东西');
-      }
-      if (homeMins >= 30 && cursor.val < homeMins - 20) {
-        const snackDur = Math.min(15, homeMins - 20 - cursor.val);
-        if (snackDur >= 5) {
-          b = makeBlock(blocks, cursor, totalAvail, arrivalMins, snackDur, '🍽️', '在家先垫一点', 'easy', '饮食', '时间充裕的话先吃点，不用饿着去父母家');
+    const DINNER_CONFIG = {
+      parents: (cfg) => {
+        if (!parentsReturnTime) { cfg.alone(); return; }
+        const parentsReturnMins = parseTimeHM(parentsReturnTime);
+        let homeMins = parentsReturnMins <= arrivalMins
+          ? (24 * 60 - arrivalMins) + parentsReturnMins
+          : parentsReturnMins - arrivalMins;
+        if (homeMins >= 10)
+          makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '👋', '换衣服 + 收拾东西', 'easy', '恢复', '换上干净衣服，带上给爸妈的东西');
+        if (homeMins >= 30 && cursor.val < homeMins - 20) {
+          const snackDur = Math.min(15, homeMins - 20 - cursor.val);
+          if (snackDur >= 5)
+            makeBlock(blocks, cursor, totalAvail, arrivalMins, snackDur, '🍽️', '在家先垫一点', 'easy', '饮食', '时间充裕的话先吃点，不用饿着去父母家');
         }
+        if (cursor.val < homeMins) cursor.val = homeMins;
+        makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '🚗', '出发去父母家', 'easy', '交通', '带上给爸妈的东西，出发');
+        makeBlock(blocks, cursor, totalAvail, arrivalMins, 90, '🍽️', '在父母家吃饭', 'warm', '陪伴', '和爸妈一起吃饭、聊天。放下手机，好好陪他们');
+        makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '🏠', '回自己家', 'easy', '恢复', '安全到家，简单收拾一下');
+      },
+      couple: () => {
+        makeBlock(blocks, cursor, totalAvail, arrivalMins, 35, '🍽️', '和伴侣一起做/吃晚餐', 'easy', '陪伴', '一起做饭或者叫外卖，边吃边聊聊天');
+      },
+      alone: () => {
+        const dinnerDur = isLow ? 20 : (isHigh ? 40 : 30);
+        makeBlock(blocks, cursor, totalAvail, arrivalMins, dinnerDur, '🍽️', '独自用餐', 'easy', '饮食', '不要刷手机，好好吃饭。可以配点音乐或播客');
       }
-      // Skip to parents return time
-      if (cursor.val < homeMins) {
-        cursor.val = homeMins;
-      }
-      // Depart to parents
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '🚗', '出发去父母家', 'easy', '交通', '带上给爸妈的东西，出发');
-      // Dinner at parents
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 90, '🍽️', '在父母家吃饭', 'warm', '陪伴', '和爸妈一起吃饭、聊天。放下手机，好好陪他们');
-      // Return home
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '🏠', '回自己家', 'easy', '恢复', '安全到家，简单收拾一下');
-    } else if (scene === 'couple') {
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 35, '🍽️', '和伴侣一起做/吃晚餐', 'easy', '陪伴', '一起做饭或者叫外卖，边吃边聊聊天');
-    } else {
-      const dinnerDur = isLow ? 20 : (isHigh ? 40 : 30);
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, dinnerDur, '🍽️', '独自用餐', 'easy', '饮食', '不要刷手机，好好吃饭。可以配点音乐或播客');
-    }
+    };
+    (DINNER_CONFIG[scene] || DINNER_CONFIG.alone)({ alone: DINNER_CONFIG.alone });
 
     // ── BUFFER ──
     b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '⏸', '缓冲休息', 'rest', '恢复', '坐着发会儿呆，让身体从"工作模式"切换出来');
@@ -2249,6 +2273,19 @@
   }
 
   /* ─── EXPORT IMAGE ─── */
+    /* ─── REUSABLE TOAST ─── */
+  function showToast(msg, type = 'error', duration = 3000) {
+    const t = document.createElement('div');
+    t.className = `ea-toast ea-${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => {
+      t.classList.remove('show');
+      setTimeout(() => t.remove(), 400);
+    }, duration);
+  }
+
   async function exportImage() {
     const btn = document.getElementById('exportBtn');
     btn.textContent = '⏳ 生成中…';
@@ -2280,7 +2317,7 @@
             toHide.forEach((el, i) => { if (el) el.style.display = originalDisplays[i] || ''; });
             btn.textContent = '🖼 导出';
             btn.disabled = false;
-            alert('图片导出组件加载失败，请联网刷新后再试。');
+            showToast('图片导出组件加载失败，请联网刷新后再试', 'error', 4000);
             reject(new Error('html2canvas load failed'));
           };
           document.head.appendChild(s);
@@ -2311,7 +2348,7 @@
       toHide.forEach((el, i) => { if (el) el.style.display = originalDisplays[i] || ''; });
       btn.textContent = '🖼 导出';
       btn.disabled = false;
-      alert('图片导出失败，请稍后重试。');
+      showToast('图片导出失败，请稍后重试', 'error', 3000);
     });
   }
 
