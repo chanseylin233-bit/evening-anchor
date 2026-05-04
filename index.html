@@ -2525,8 +2525,6 @@
     document.head.appendChild(s);
   }
 
-  let _activePicker = null;
-
   function openWheel(id) {
     initWheelCss();
     const input = document.getElementById(id);
@@ -2536,7 +2534,6 @@
     // Mark display as open
     const display = document.querySelector(`#picker-${id} .wheel-display`);
     if (display) display.classList.add('open');
-    _activePicker = id;
   }
 
   function renderOverlay(id, curH, curM) {
@@ -2701,7 +2698,6 @@
     // Remove open state from display
     const display = document.querySelector(`#picker-${id} .wheel-display`);
     if (display) display.classList.remove('open');
-    _activePicker = null;
   }
 
   // Wire up: find all .wheel-picker and attach click → openWheel

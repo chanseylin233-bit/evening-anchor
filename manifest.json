@@ -4,7 +4,7 @@
   "description": "你的晚间安排生成器，下班到家直接执行",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#F1F5F9",
+  "background_color": "#0F0E17",
   "theme_color": "#FDF6EC",
   "orientation": "portrait-primary",
   "lang": "zh-CN",
