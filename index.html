@@ -1166,6 +1166,10 @@
       <div class="field-label"><span class="emoji">🕐</span>预计下班到家时间</div>
       <div class="wheel-picker" id="picker-arrivalTime">
         <input type="time" id="arrivalTime" value="19:30" />
+        <div class="wheel-display" data-picker="arrivalTime">
+          <span class="colon">下午</span>07<span class="colon">:</span>30
+          <span class="wheel-hint">点击调整</span>
+        </div>
       </div>
     </div>
 
@@ -1208,6 +1212,10 @@
           <span style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">出发时间</span>
           <div class="wheel-picker" id="picker-parentsReturnTime">
             <input type="time" id="parentsReturnTime" value="18:30" />
+            <div class="wheel-display" data-picker="parentsReturnTime">
+              <span class="colon">下午</span>06<span class="colon">:</span>30
+              <span class="wheel-hint">点击调整</span>
+            </div>
           </div>
           <span style="font-size:0.78rem; color:var(--text-dim);">出门去父母家的时间</span>
         </div>
@@ -1253,6 +1261,10 @@
         <div style="margin-top:10px;">
           <div class="wheel-picker" id="picker-tomorrowTime">
             <input type="time" id="tomorrowTime" value="08:00" />
+            <div class="wheel-display" data-picker="tomorrowTime">
+              <span class="colon">上午</span>08<span class="colon">:</span>00
+              <span class="wheel-hint">点击调整</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1267,6 +1279,10 @@
       <div class="field-label"><span class="emoji">🌙</span>预计入睡时间</div>
       <div class="wheel-picker" id="picker-sleepTimeInput">
         <input type="time" id="sleepTimeInput" value="23:00" />
+        <div class="wheel-display" data-picker="sleepTimeInput">
+          <span class="colon">下午</span>11<span class="colon">:</span>00
+          <span class="wheel-hint">点击调整</span>
+        </div>
       </div>
     </div>
 
@@ -2793,33 +2809,29 @@ document.getElementById('planOutput')?.addEventListener('change', e => {
 
 
 function bindWheelPickers() {
-    document.querySelectorAll('.wheel-picker').forEach(wrapper => {
-      const input = wrapper.querySelector('input[type="time"]');
-      if (!input) return;
-      // Remove old listeners by cloning
-      const newWrapper = wrapper.cloneNode(true);
-      wrapper.parentNode.replaceChild(newWrapper, wrapper);
-      const newInput = newWrapper.querySelector('input');
-      // Render display text inside wrapper
-      _syncWheelDisplay(newInput);
-      newInput.addEventListener('change', () => _syncWheelDisplay(newInput));
+    document.querySelectorAll('.wheel-picker input[type="time"]').forEach(input => {
+      if (!input.id) return;
+      _syncWheelDisplay(input);
+      input.addEventListener('change', () => _syncWheelDisplay(input));
     });
   }
 
   function _syncWheelDisplay(input) {
-    // Show human-readable time in the wheel-picker div
+    // Update the pre-rendered .wheel-display inside .wheel-picker
     const id = input.id;
-    const display = document.querySelector(`#picker-${id}`);
+    const picker = document.querySelector(`#picker-${id}`);
+    if (!picker) return;
+    const display = picker.querySelector('.wheel-display');
     if (!display) return;
     const [h, m] = (input.value || '19:30').split(':').map(Number);
     const ampm = h >= 12 ? '下午' : '上午';
     const h12 = h % 12 || 12;
     display.dataset.h = h;
     display.dataset.m = m;
-    display.innerHTML = `<div class="wheel-display" data-picker="${id}">
+    display.innerHTML = `
       <span class="colon">${ampm}</span>${String(h12).padStart(2,'0')}<span class="colon">:</span>${String(m).padStart(2,'0')}
       <span class="wheel-hint">点击调整</span>
-    </div>`;
+    `;
   }
 
   // Call bindWheelPickers after DOM is ready
