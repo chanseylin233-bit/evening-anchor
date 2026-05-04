@@ -26,13 +26,11 @@
       --accent-warm: #FFB86C;
       --accent-cool: #7AA2F7;
       --accent-low:  #9ECE6A;
-      --accent-red:  #F7768E;
       --text-primary:#E8E6F0;
       --text-muted:  #8B87A3;
       --text-dim:    #565478;
       --border:      #2D2B4E;
       --glow-warm:   rgba(255,184,108,0.18);
-      --glow-cool:   rgba(122,162,247,0.12);
     }
 
     body {
@@ -1129,7 +1127,7 @@
         <div>深夜了，帮你精简到最核心的几项 →</div>
         <div class="ln-hint">已隐藏晚餐安排、今晚目标、明日事项（精力不足时默认休息）</div>
       </div>
-      <button class="late-night-dismiss" onclick="dismissLateNight()">显示全部</button>
+      <button class="late-night-dismiss"  data-action="dismiss">显示全部</button>
     </div>
 
     <div class="field" data-late="keep">
@@ -1141,16 +1139,16 @@
 
     <div class="field" data-late="keep">
       <div class="field-label"><span class="emoji">⚡</span>当前精力状态</div>
-      <div class="btn-group compact-group energy-group" id="energyGroup">
-        <button class="opt-btn" data-value="low" onclick="selectOpt(this,'energy')">
+      <div class="btn-group compact-group energy-group" id="energyGroup" data-field="energy">
+        <button class="opt-btn" data-value="low">
           <span class="opt-icon">🪫</span>
           <span class="opt-text">低</span>
         </button>
-        <button class="opt-btn selected" data-value="mid" onclick="selectOpt(this,'energy')">
+        <button class="opt-btn selected" data-value="mid">
           <span class="opt-icon">🟡</span>
           <span class="opt-text">中</span>
         </button>
-        <button class="opt-btn" data-value="high" onclick="selectOpt(this,'energy')">
+        <button class="opt-btn" data-value="high">
           <span class="opt-icon">🔋</span>
           <span class="opt-text">高</span>
         </button>
@@ -1159,16 +1157,16 @@
 
     <div class="field" data-late="hide">
       <div class="field-label"><span class="emoji">🍽️</span>晚餐安排</div>
-      <div class="btn-group" id="sceneGroup">
-        <button class="opt-btn selected-cool" data-value="alone" onclick="selectOpt(this,'scene')">
+      <div class="btn-group" id="sceneGroup" data-field="scene">
+        <button class="opt-btn selected-cool" data-value="alone">
           <span class="opt-icon">🍜</span>
           <span>独自用餐</span>
         </button>
-        <button class="opt-btn" data-value="couple" onclick="selectOpt(this,'scene')">
+        <button class="opt-btn" data-value="couple">
           <span class="opt-icon">💑</span>
           <span>和伴侣吃</span>
         </button>
-        <button class="opt-btn" data-value="parents" onclick="selectOpt(this,'scene')">
+        <button class="opt-btn" data-value="parents">
           <span class="opt-icon">🏠</span>
           <span>回父母家吃</span>
         </button>
@@ -1186,21 +1184,21 @@
 
     <div class="field" data-late="hide">
       <div class="field-label"><span class="emoji">🎯</span>今晚主目标</div>
-      <div class="btn-group" id="goalGroup">
-        <button class="opt-btn" data-value="rest" onclick="selectOpt(this,'goal')">
+      <div class="btn-group" id="goalGroup" data-field="goal">
+        <button class="opt-btn" data-value="rest">
           <span class="opt-icon">🛋️</span>
           <span>休息</span>
         </button>
-        <button class="opt-btn selected-cool" data-value="productivity" onclick="selectOpt(this,'goal')">
+        <button class="opt-btn selected-cool" data-value="productivity">
           <span class="opt-icon">📋</span>
           <span>生产力</span>
         </button>
 
-        <button class="opt-btn" data-value="hobby" onclick="selectOpt(this,'goal')">
+        <button class="opt-btn" data-value="hobby">
           <span class="opt-icon">🎨</span>
           <span>爱好</span>
         </button>
-        <button class="opt-btn" data-value="health" onclick="selectOpt(this,'goal')">
+        <button class="opt-btn" data-value="health">
           <span class="opt-icon">🏃</span>
           <span>健康</span>
         </button>
@@ -1209,12 +1207,12 @@
 
     <div class="field" data-late="hide">
       <div class="field-label"><span class="emoji">⏰</span>明日重要事项</div>
-      <div class="btn-group compact-group" id="tomorrowGroup">
-        <button class="opt-btn" data-value="none" onclick="selectOpt(this,'tomorrow')">
+      <div class="btn-group compact-group" id="tomorrowGroup" data-field="tomorrow">
+        <button class="opt-btn" data-value="none">
           <span class="opt-icon">🈚</span>
           <span class="opt-text">无</span>
         </button>
-        <button class="opt-btn" data-value="has" onclick="selectOpt(this,'tomorrow')">
+        <button class="opt-btn" data-value="has">
           <span class="opt-icon">📌</span>
           <span class="opt-text">有</span>
         </button>
@@ -1240,7 +1238,7 @@
       </div>
     </div>
 
-    <button class="generate-btn" id="generateBtn" onclick="generatePlan()">
+    <button class="generate-btn" id="generateBtn"  data-action="generate">
       <span class="btn-text">生成我的晚间计划 →</span>
       <span class="spinner"></span>
     </button>
@@ -1249,10 +1247,10 @@
   <!-- PLAN VIEW -->
   <div class="plan-view" id="planView">
     <div class="plan-header">
-      <button class="back-btn" onclick="resetForm()">← 重新填写</button>
+      <button class="back-btn"  data-action="reset">← 重新填写</button>
       <div class="plan-title">📋 今晚安排</div>
-      <button class="copy-btn" id="exportBtn" onclick="exportImage()">🖼 导出</button>
-      <button class="copy-btn" id="copyBtn" onclick="copyPlan()">📋 复制</button>
+      <button class="copy-btn" id="exportBtn"  data-action="export">🖼 导出</button>
+      <button class="copy-btn" id="copyBtn"  data-action="copy">📋 复制</button>
     </div>
 
     <div class="live-bar" id="liveBar">
@@ -1275,14 +1273,14 @@
     </div>
 
     <div class="compact-toggle">
-      <button class="compact-btn" id="compactBtn" onclick="toggleCompact()">📐 紧凑模式</button>
+      <button class="compact-btn" id="compactBtn"  data-action="compact">📐 紧凑模式</button>
     </div>
     <div class="plan-blocks" id="planBlocks">
       <!-- filled by JS -->
     </div>
 
     <div class="lowpower-toggle">
-      <button class="lowpower-trigger" id="lowpowerToggle" onclick="toggleLowPower()">
+      <button class="lowpower-trigger" id="lowpowerToggle"  data-action="lowpower">
         <span>🔋</span>
         <span id="lowpowerLabel">精力不支时的保底方案</span>
       </button>
@@ -2045,7 +2043,7 @@
         : '';
       return `
       <div class="plan-block ${b.type} ${i === 0 ? 'first' : ''}">
-        <input type="checkbox" class="block-check" aria-label="标记完成" onclick="toggleBlockDone(this)" />
+        <input type="checkbox" class="block-check" aria-label="标记完成"  data-toggle="block-done" />
         ${i === 0 ? '<div class="first-badge">▶ 第一步，从这里开始</div>' : ''}
         <div class="block-time">
           <span class="block-start">${b.time.start}</span>
@@ -2070,7 +2068,7 @@
     // Low power blocks
     const lpHtml = lowPower.map(b => `
       <div class="lowpower-block">
-        <input type="checkbox" class="block-check" aria-label="标记完成" onclick="toggleLowDone(this)" />
+        <input type="checkbox" class="block-check" aria-label="标记完成"  data-toggle="low-done" />
         <span class="lowpower-time">${b.time.start} – ${b.time.end}</span>
         <span class="lowpower-action">${b.action}</span>
         <div class="lowpower-note">${b.note}</div>
@@ -2528,26 +2526,27 @@
     }
     const overlay = document.createElement('div');
     overlay.className = 'wheel-overlay';
+    overlay.dataset.pickerId = id;
     overlay.innerHTML = `
       <div class="wheel-panel">
         <div class="wheel-panel-header">
           <span class="wheel-panel-title">滑动选择时间</span>
-          <button class="wheel-done-btn" onclick="closeWheel('${id}')">确定</button>
+          <button class="wheel-done-btn" data-action="close">确定</button>
         </div>
         <div class="wheel-body">
           <div class="wheel-col">
             <div class="wheel-scroll-wrap" id="wh"><div class="wheel-track" id="wtrack-h"></div></div>
             <div class="wheel-btns">
-              <button class="wheel-ctrl" onclick="wheelAdj('${id}', 1, 0)">+1</button>
-              <button class="wheel-ctrl" onclick="wheelAdj('${id}',-1, 0)">−1</button>
+              <button class="wheel-ctrl" data-action="adj" data-dh="1" data-dm="0">+1</button>
+              <button class="wheel-ctrl" data-action="adj" data-dh="-1" data-dm="0">−1</button>
             </div>
           </div>
           <div class="wheel-sep">:</div>
           <div class="wheel-col">
             <div class="wheel-scroll-wrap" id="wm"><div class="wheel-track" id="wtrack-m"></div></div>
             <div class="wheel-btns">
-              <button class="wheel-ctrl" onclick="wheelAdj('${id}', 0, 1)">+1</button>
-              <button class="wheel-ctrl" onclick="wheelAdj('${id}', 0,-1)">−1</button>
+              <button class="wheel-ctrl" data-action="adj" data-dh="0" data-dm="1">+1</button>
+              <button class="wheel-ctrl" data-action="adj" data-dh="0" data-dm="-1">−1</button>
             </div>
           </div>
         </div>
@@ -2555,6 +2554,21 @@
     `;
     overlay.addEventListener('click', e => {
       if (e.target === overlay) closeWheel(id);
+    });
+
+    // Event delegation for wheel picker buttons
+    overlay.addEventListener('click', e => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const pickerId = overlay.dataset.pickerId;
+      if (action === 'close') {
+        closeWheel(pickerId);
+      } else if (action === 'adj') {
+        const dh = parseInt(btn.dataset.dh) || 0;
+        const dm = parseInt(btn.dataset.dm) || 0;
+        wheelAdj(pickerId, dh, dm);
+      }
     });
     document.body.appendChild(overlay);
 
@@ -2685,7 +2699,53 @@
   }
 
   // Wire up: find all .wheel-picker and attach click → openWheel
-  function bindWheelPickers() {
+  
+// Event delegation for button groups
+document.querySelectorAll('.btn-group[data-field]').forEach(group => {
+  group.addEventListener('click', e => {
+    const btn = e.target.closest('.opt-btn');
+    if (!btn) return;
+    const field = group.dataset.field;
+    if (field) selectOpt(btn, field);
+  });
+});
+
+// Event delegation for action buttons
+document.getElementById('controls')?.addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  switch(action) {
+    case 'generate': generatePlan(); break;
+    case 'reset': resetForm(); break;
+    case 'export': exportImage(); break;
+    case 'copy': copyPlan(); break;
+    case 'compact': toggleCompact(); break;
+    case 'lowpower': toggleLowPower(); break;
+    case 'dismiss': dismissLateNight(); break;
+  }
+});
+
+
+// Event delegation for wheel-display (open picker)
+document.addEventListener('click', e => {
+  const display = e.target.closest('.wheel-display[data-picker]');
+  if (display) {
+    openWheel(display.dataset.picker);
+  }
+});
+
+// Event delegation for checkboxes with data-toggle
+document.getElementById('planOutput')?.addEventListener('change', e => {
+  const input = e.target;
+  if (!input.matches('[data-toggle]')) return;
+  const toggle = input.dataset.toggle;
+  if (toggle === 'block-done') toggleBlockDone(input);
+  else if (toggle === 'low-done') toggleLowDone(input);
+});
+
+
+function bindWheelPickers() {
     document.querySelectorAll('.wheel-picker').forEach(wrapper => {
       const input = wrapper.querySelector('input[type="time"]');
       if (!input) return;
@@ -2709,7 +2769,7 @@
     const h12 = h % 12 || 12;
     display.dataset.h = h;
     display.dataset.m = m;
-    display.innerHTML = `<div class="wheel-display" onclick="openWheel('${id}')">
+    display.innerHTML = `<div class="wheel-display" data-picker="${id}">
       <span class="colon">${ampm}</span>${String(h12).padStart(2,'0')}<span class="colon">:</span>${String(m).padStart(2,'0')}
       <span class="wheel-hint">点击调整</span>
     </div>`;
