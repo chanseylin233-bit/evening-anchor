@@ -1014,6 +1014,8 @@
       .compact-mode .lowpower-time { font-size: 0.66rem; }
       .compact-mode .lowpower-action { font-size: 0.82rem; }
       .compact-mode .lowpower-note { font-size: 0.68rem; }
+      /* Low power checkbox position */
+      .lowpower-block .block-check { right: 12px; top: 10px; width: 18px; height: 18px; border-radius: 5px; }
 
       /* Non-compact mobile still gets some reduction */
       .plan-block { padding: 14px 16px; }
@@ -1655,7 +1657,6 @@
 
     const isLow = energy === 'low';
     const isHigh = energy === 'high';
-    const isMid = energy === 'mid';
     const hasTomorrow = tomorrow === 'has';
     
 
@@ -2040,7 +2041,7 @@
     // Low power blocks
     const lpHtml = lowPower.map(b => `
       <div class="lowpower-block">
-        <input type="checkbox" class="block-check" onclick="toggleLowDone(this)" style="position:absolute;right:12px;top:10px;width:18px;height:18px;appearance:none;-webkit-appearance:none;border:2px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;" />
+        <input type="checkbox" class="block-check" onclick="toggleLowDone(this)" />
         <span class="lowpower-time">${b.time.start} – ${b.time.end}</span>
         <span class="lowpower-action">${b.action}</span>
         <div class="lowpower-note">${b.note}</div>
@@ -2538,8 +2539,6 @@
   function _buildScroll(wrapId, items, selected, inputId, type) {
     const wrap = document.getElementById(wrapId);
     const track = document.getElementById('wtrack-' + type);
-    // Show 4 items (0..3), item at index 1 is the "active" slot (54px tall)
-    const visCount = 4;
     track.innerHTML = '';
     const frag = document.createDocumentFragment();
     items.forEach((v, i) => {
