@@ -1342,7 +1342,6 @@
   document.addEventListener('DOMContentLoaded', restoreFormUI);
 
   const LATE_NIGHT_HOUR = 22; // trigger at 22:00
-  let lateNightMode = false;
 
   /* ─── LATE NIGHT AUTO-SIMPLIFY ─── */
   function checkLateNight() {
@@ -1351,7 +1350,6 @@
     const m = now.getMinutes();
     if (h < LATE_NIGHT_HOUR) return; // daytime, skip
 
-    lateNightMode = true;
 
     // Show banner
     const banner = document.getElementById('lateNightBanner');
@@ -1388,7 +1386,6 @@
   }
 
   function dismissLateNight() {
-    lateNightMode = false;
     document.getElementById('lateNightBanner').style.display = 'none';
     document.querySelectorAll('.late-hidden').forEach(el => el.classList.remove('late-hidden'));
   }
