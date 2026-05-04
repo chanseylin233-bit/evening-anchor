@@ -1,0 +1,4 @@
+1412:     { cat: '恢复', icon: '🚿', action: '洗个热水澡', dur: 20, energy: 'low', desc: '让热水冲走一天的疲惫，45℃左右泡20分钟' },
+1413:     { cat: '恢复', icon: '🦶', action: '泡脚 + 拉伸', dur: 20, energy: 'low', desc: '热水泡脚15分钟，顺手做几组简单拉伸' },
+
+Done - total lines: 2778

@@ -1,1303 +1,4 @@
-﻿<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#FDF6EC">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="晚间锚点">
-  <meta name="description" content="你的晚间安排生成器，下班到家直接执行">
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icon-192.svg">
-  <link rel="icon" href="./icon-192.svg" type="image/svg+xml">
-  <title>Evening Anchor — 给自己一个值得的夜晚</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg-base:      #0F0E17;
-      --bg-card:     #1A1830;
-      --bg-input:    #232140;
-      --bg-hover:    #2D2B52;
-      --accent-warm: #FFB86C;
-      --accent-cool: #7AA2F7;
-      --accent-low:  #9ECE6A;
-      --accent-red:  #F7768E;
-      --text-primary:#E8E6F0;
-      --text-muted:  #8B87A3;
-      --text-dim:    #565478;
-      --border:      #2D2B4E;
-      --glow-warm:   rgba(255,184,108,0.18);
-      --glow-cool:   rgba(122,162,247,0.12);
-    }
-
-    body {
-      font-family: 'Noto Sans SC', sans-serif;
-      background: var(--bg-base);
-      color: var(--text-primary);
-      min-height: 100vh;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    /* Ambient background */
-    body::before {
-      content: '';
-      position: fixed;
-      top: -40%;
-      right: -20%;
-      width: 70vw;
-      height: 70vw;
-      background: radial-gradient(circle, rgba(255,184,108,0.05) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: -30%;
-      left: -10%;
-      width: 60vw;
-      height: 60vw;
-      background: radial-gradient(circle, rgba(122,162,247,0.05) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      max-width: 580px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* ─── HEADER ─── */
-    .header {
-      text-align: center;
-      margin-bottom: 48px;
-      animation: fadeUp 0.6s ease-out both;
-    }
-    .header-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 16px;
-      opacity: 0.9;
-    }
-    .header h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 600;
-      font-size: 2.4rem;
-      letter-spacing: 0.02em;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-    .header p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      font-weight: 300;
-    }
-
-    /* ─── FORM CARD ─── */
-    .form-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px 28px;
-      animation: fadeUp 0.6s ease-out 0.1s both;
-      transition: opacity 0.35s ease, transform 0.35s ease;
-    }
-    .form-card.hidden {
-      opacity: 0;
-      transform: translateY(-10px);
-      pointer-events: none;
-      display: none;
-    }
-
-    .field {
-      margin-bottom: 28px;
-    }
-    .field:last-of-type { margin-bottom: 0; }
-
-    .field-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .field-label .emoji {
-      font-size: 1rem;
-      opacity: 0.85;
-    }
-
-    /* ─── WHEEL TIME PICKER ─── */
-    .wheel-picker { position: relative; user-select: none; }
-    .wheel-display {
-      width: 100%; background: var(--bg-input); border: 1.5px solid var(--border);
-      border-radius: 12px; padding: 14px 16px;
-      font-family: 'JetBrains Mono', monospace; font-size: 1.3rem;
-      color: var(--text-primary); text-align: center; cursor: pointer;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      display: flex; align-items: center; justify-content: center; gap: 4px; line-height: 1;
-    }
-    .wheel-display:hover { border-color: var(--text-dim); }
-    .wheel-display.open { border-color: var(--accent-warm); box-shadow: 0 0 0 3px var(--glow-warm); }
-    .wheel-display .colon { color: var(--accent-warm); }
-    .wheel-display .wheel-hint {
-      font-size: 0.62rem; color: var(--text-dim);
-      font-family: 'Noto Sans SC', sans-serif; margin-left: 8px;
-    }
-    /* Hide native time input in wheel mode */
-    .wheel-picker input[type="time"] { display: none; }
-
-    /* ─── TEXTAREA ─── */
-    textarea {
-      width: 100%;
-      box-sizing: border-box;
-      background: var(--bg-input);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-family: 'LXGW Wen Kai', serif;
-      font-size: 0.95rem;
-      color: var(--text-primary);
-      resize: vertical;
-      min-height: 72px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    textarea::placeholder { color: var(--text-dim); font-style: italic; }
-    textarea:focus { border-color: var(--accent-warm); }
-
-    /* ─── MUST-DO BLOCK ─── */
-    .mustdo-block {
-      background: rgba(255, 184, 108, 0.08);
-      border: 1.5px solid rgba(255, 184, 108, 0.35);
-      border-left: 3px solid var(--accent-warm);
-      border-radius: 14px;
-      padding: 16px 20px;
-      margin-bottom: 12px;
-    }
-    .mustdo-label {
-      font-size: 0.72rem;
-      color: var(--accent-warm);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
-    }
-    .mustdo-text {
-      font-size: 1rem;
-      color: var(--text-primary);
-      line-height: 1.5;
-    }
-
-    /* ─── SUBTASKS (主任务块内子项) ─── */
-    .block-subtasks {
-      margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px dashed rgba(255, 184, 108, 0.3);
-    }
-    .subtasks-label {
-      font-size: 0.72rem;
-      color: var(--accent-warm);
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      margin-bottom: 8px;
-    }
-    .subtask-item {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      font-size: 0.9rem;
-      color: var(--text-primary);
-      line-height: 1.6;
-      padding-left: 4px;
-    }
-    .subtask-dot {
-      display: inline-block;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--accent-warm);
-      flex-shrink: 0;
-      margin-top: 7px;
-    }
-
-    /* ─── BUTTON GROUP ─── */
-    .btn-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .btn-group.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    #goalGroup { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    #goalGroup .opt-btn { min-width: 0; }
-
-    .opt-btn {
-      flex: 1;
-      min-width: 70px;
-      background: var(--bg-input);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 8px;
-      color: var(--text-muted);
-      font-family: 'Noto Sans SC', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      user-select: none;
-    }
-    .opt-btn:hover {
-      border-color: var(--text-dim);
-      color: var(--text-primary);
-      background: var(--bg-hover);
-    }
-    .opt-btn .opt-icon {
-      font-size: 1.2rem;
-      line-height: 1;
-    }
-    .opt-btn.selected {
-      border-color: var(--accent-warm);
-      color: var(--accent-warm);
-      background: rgba(255,184,108,0.08);
-      box-shadow: 0 0 0 1px rgba(255,184,108,0.2);
-    }
-    .opt-btn.selected-cool {
-      border-color: var(--accent-cool);
-      color: var(--accent-cool);
-      background: rgba(122,162,247,0.08);
-      box-shadow: 0 0 0 1px rgba(122,162,247,0.2);
-    }
-    .opt-btn .sub {
-      font-size: 0.7rem;
-      opacity: 0.65;
-      font-weight: 400;
-    }
-
-    /* ─── COMPACT BTN GROUP (energy, tomorrow) ─── */
-    .energy-group,
-    .compact-group {
-      flex-direction: row;
-      align-items: center;
-    }
-    .energy-group .opt-btn,
-    .compact-group .opt-btn {
-      flex-direction: row;
-      padding: 8px 14px;
-      gap: 6px;
-      border-radius: 8px;
-      min-width: auto;
-    }
-    .energy-group .opt-icon,
-    .compact-group .opt-icon {
-      font-size: 1rem;
-    }
-    .energy-group .opt-icon {
-      display: inline-block;
-      transform: rotate(-90deg);
-    }
-    .energy-group .opt-text,
-    .compact-group .opt-text {
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-    .energy-group .sub,
-    .compact-group .sub { display: none; }
-
-    /* ─── CONDITIONAL ─── */
-    .conditional-field {
-      margin-top: 14px;
-      display: none;
-      animation: fadeUp 0.25s ease-out;
-    }
-    .conditional-field.visible { display: block; }
-
-    /* ─── GENERATE BTN ─── */
-    .generate-btn {
-      width: 100%;
-      margin-top: 32px;
-      padding: 16px 24px;
-      background: linear-gradient(135deg, #e09a5a 0%, #ff9f45 50%, #f5a04a 100%);
-      border: none;
-      border-radius: 14px;
-      color: #1a1000;
-      font-family: 'Noto Sans SC', sans-serif;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      letter-spacing: 0.03em;
-      position: relative;
-      overflow: hidden;
-    }
-    .generate-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-    }
-    .generate-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(255,184,108,0.35);
-      filter: brightness(1.08);
-    }
-    .generate-btn:active:not(:disabled) { transform: translateY(0); }
-    .generate-btn:disabled {
-      background: var(--bg-input);
-      color: var(--text-dim);
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    .generate-btn .spinner {
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(26,16,0,0.3);
-      border-top-color: #1a1000;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: none;
-    }
-    .generate-btn.loading .spinner { display: block; }
-    .generate-btn.loading .btn-text { opacity: 0.7; }
-
-    /* ─── PLAN VIEW ─── */
-    .plan-view {
-      display: none;
-      animation: fadeUp 0.5s ease-out;
-    }
-    .plan-view.visible {
-      display: block;
-    }
-
-    .plan-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      animation: fadeUp 0.5s ease-out 0.05s both;
-    }
-    .back-btn {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 7px 14px;
-      color: var(--text-muted);
-      font-family: 'Noto Sans SC', sans-serif;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .back-btn:hover { border-color: var(--text-dim); color: var(--text-primary); }
-    .plan-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .copy-btn {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 7px 12px;
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Noto Sans SC', sans-serif;
-    }
-    .copy-btn:hover { border-color: var(--accent-warm); color: var(--accent-warm); }
-    .copy-btn.copied { border-color: var(--accent-low); color: var(--accent-low); }
-
-    /* ─── LATE NIGHT MODE ─── */
-    .late-night-banner {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      color: #e0e0e0;
-      border-radius: 14px;
-      padding: 16px 20px;
-      margin-bottom: 16px;
-      font-size: 0.88rem;
-      line-height: 1.6;
-      display: none;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      animation: fadeSlideIn 0.4s ease;
-    }
-    .late-night-banner .ln-time {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #FFD93D;
-    }
-    .late-night-banner .ln-hint {
-      color: #aaa;
-      font-size: 0.8rem;
-      margin-top: 4px;
-    }
-    .late-night-dismiss {
-      background: none;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #ccc;
-      border-radius: 8px;
-      padding: 4px 12px;
-      font-size: 0.78rem;
-      cursor: pointer;
-      margin-left: auto;
-      flex-shrink: 0;
-    }
-    .late-night-dismiss:hover { border-color: #FFD93D; color: #FFD93D; }
-    .field.late-hidden { display: none; }
-    .field.late-dimmed { opacity: 0.5; pointer-events: none; }
-
-    /* ─── CELEBRATION ─── */
-    #confettiCanvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 9999;
-    }
-    .celebrate-toast {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0.5);
-      background: linear-gradient(135deg, #FFD93D 0%, #FF6B6B 100%);
-      color: #fff;
-      font-family: 'Noto Sans SC', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      padding: 20px 36px;
-      border-radius: 20px;
-      box-shadow: 0 12px 40px rgba(255,107,107,0.35);
-      z-index: 10000;
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none;
-      text-align: center;
-      max-width: 88vw;
-    }
-    .celebrate-toast.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    /* ─── LIVE BAR ─── */
-    .live-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 0 16px;
-      font-family: 'JetBrains Mono', monospace;
-      animation: fadeUp 0.4s ease-out 0.1s both;
-    }
-    .live-clock {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: 0.04em;
-    }
-    .live-countdown {
-      font-size: 0.78rem;
-      color: var(--accent-warm);
-      background: rgba(255,184,108,0.1);
-      padding: 3px 10px;
-      border-radius: 6px;
-      white-space: nowrap;
-    }
-    .live-countdown.idle { color: var(--text-dim); background: rgba(255,255,255,0.04); }
-
-    /* ─── CURRENT BLOCK HIGHLIGHT ─── */
-    .plan-block.current {
-      border-color: var(--accent-warm);
-      box-shadow: 0 0 0 2px rgba(255,184,108,0.25), 0 4px 20px rgba(255,184,108,0.1);
-    }
-    .plan-block.current::before {
-      background: var(--accent-warm);
-      width: 4px;
-    }
-    .plan-block.current .block-action {
-      color: var(--accent-warm);
-    }
-    .plan-block.past {
-      opacity: 0.45;
-    }
-
-    /* ─── SUMMARY BAR ─── */
-    .summary-bar {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 20px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-      animation: fadeUp 0.5s ease-out 0.1s both;
-    }
-    .summary-item {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-    }
-    .summary-label {
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .summary-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
-      color: var(--text-primary);
-      font-weight: 500;
-    }
-    .summary-sep { width: 1px; height: 32px; background: var(--border); flex-shrink: 0; }
-    .summary-hint {
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      margin-left: auto;
-      font-style: italic;
-      min-width: 0;
-    }
-
-    /* ─── PLAN BLOCKS ─── */
-    .plan-blocks {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .plan-block {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 20px;
-      position: relative;
-      overflow: hidden;
-      opacity: 0;
-      transform: translateX(-16px);
-      transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.2s, box-shadow 0.2s;
-    }
-    .plan-block.visible {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .plan-block:hover {
-      border-color: var(--text-dim);
-    }
-
-    /* Left accent bar */
-    .plan-block::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      border-radius: 3px 0 0 3px;
-      background: var(--accent-warm);
-    }
-    .plan-block.easy::before { background: var(--accent-low); }
-    .plan-block.focus::before { background: var(--accent-cool); }
-    .plan-block.rest::before { background: #bb9af7; }
-
-    /* First block — highlighted start */
-    .plan-block.first {
-      border-color: rgba(255,184,108,0.4);
-      background: linear-gradient(135deg, rgba(255,184,108,0.06) 0%, var(--bg-card) 60%);
-      box-shadow: 0 0 0 1px rgba(255,184,108,0.2), 0 4px 20px rgba(255,184,108,0.08);
-    }
-    .plan-block.first::before { background: var(--accent-warm); width: 4px; }
-
-    .block-time {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .block-start { color: var(--accent-warm); font-weight: 500; }
-    .block-end { color: var(--text-dim); }
-    .block-duration {
-      margin-left: 6px;
-      padding: 1px 7px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 20px;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-family: 'Noto Sans SC', sans-serif;
-    }
-
-    /* ─── CHECKBOX ─── */
-    .block-check {
-      position: absolute;
-      right: 16px;
-      top: 16px;
-      width: 22px;
-      height: 22px;
-      appearance: none;
-      -webkit-appearance: none;
-      border: 2px solid var(--border);
-      border-radius: 6px;
-      background: transparent;
-      cursor: pointer;
-      transition: all 0.25s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .block-check:hover {
-      border-color: var(--accent-warm);
-      background: rgba(255,184,108,0.05);
-    }
-    .block-check:checked {
-      background: var(--accent-warm);
-      border-color: var(--accent-warm);
-    }
-    .block-check:checked::after {
-      content: '✓';
-      color: #1a1000;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1;
-    }
-    /* Completed state */
-    .plan-block.done {
-      opacity: 0.5;
-    }
-    .plan-block.done .block-action {
-      text-decoration: line-through;
-      text-decoration-color: var(--text-dim);
-      color: var(--text-muted);
-    }
-    .plan-block.done .block-icon { opacity: 0.5; }
-    .plan-block.done .block-desc { display: none; }
-    .plan-block.done .block-subtasks { display: none; }
-    .plan-block.done .block-time .block-start { color: var(--text-dim); }
-    .plan-block.done .first-badge { display: none; }
-    .plan-block.done::before { background: var(--text-dim); }
-
-    .block-main {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 6px;
-      padding-right: 32px;
-    }
-    .block-icon { font-size: 1.1rem; }
-    .block-action {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.3;
-      transition: color 0.25s, text-decoration 0.25s;
-    }
-    .first .block-action { color: var(--accent-warm); }
-
-    .block-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .block-tag {
-      font-size: 0.72rem;
-      padding: 2px 8px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.06);
-      color: var(--text-muted);
-    }
-    .block-tag.tag-easy { background: rgba(158,206,106,0.12); color: var(--accent-low); }
-    .block-tag.tag-focus { background: rgba(122,162,247,0.12); color: var(--accent-cool); }
-    .block-tag.tag-warm { background: rgba(255,184,108,0.12); color: var(--accent-warm); }
-    .block-tag.tag-rest { background: rgba(187,154,247,0.12); color: #bb9af7; }
-    .block-desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-      font-weight: 300;
-    }
-
-    /* First step badge */
-    .first-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.72rem;
-      padding: 3px 10px;
-      border-radius: 20px;
-      background: rgba(255,184,108,0.15);
-      color: var(--accent-warm);
-      border: 1px solid rgba(255,184,108,0.3);
-      margin-bottom: 8px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      animation: pulse-badge 2.5s ease-in-out infinite;
-    }
-
-    /* ─── LOW POWER VERSION ─── */
-    .lowpower-toggle {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .lowpower-trigger {
-      background: none;
-      border: 1px dashed var(--border);
-      border-radius: 12px;
-      padding: 14px 20px;
-      color: var(--text-dim);
-      font-family: 'Noto Sans SC', sans-serif;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .lowpower-trigger:hover {
-      border-color: var(--text-muted);
-      color: var(--text-muted);
-      background: var(--bg-card);
-    }
-    .lowpower-section {
-      margin-top: 12px;
-      display: none;
-      animation: fadeUp 0.3s ease-out;
-    }
-    .lowpower-section.visible { display: block; }
-
-    .lowpower-header {
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      text-align: center;
-      margin-bottom: 12px;
-      font-style: italic;
-    }
-    .lowpower-block {
-      background: rgba(35,33,64,0.6);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 18px;
-      margin-bottom: 6px;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.3s, transform 0.3s;
-      position: relative;
-    }
-    .lowpower-block.visible { opacity: 1; transform: translateY(0); }
-    .lowpower-block::before {
-      content: '';
-      display: inline-block;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent-low);
-      margin-right: 10px;
-      vertical-align: middle;
-    }
-    .lowpower-time {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-    }
-    .lowpower-action {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      display: inline;
-      margin-left: 8px;
-    }
-    .lowpower-note {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-top: 4px;
-      padding-left: 14px;
-      font-style: italic;
-    }
-
-    /* ─── FOOTER HINT ─── */
-    .footer-note {
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-top: 28px;
-      font-style: italic;
-    }
-
-    /* ─── ANIMATIONS ─── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    @keyframes pulse-badge {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(255,184,108,0.0); }
-      50% { box-shadow: 0 0 0 6px rgba(255,184,108,0.12); }
-    }
-
-    /* ─── DIVIDER ─── */
-    .section-divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 20px 0 16px;
-      color: var(--text-dim);
-      font-size: 0.75rem;
-    }
-    .section-divider::before,
-    .section-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ─── MOBILE COMPACT MODE ─── */
-    .compact-toggle {
-      display: none;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-    .compact-btn {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 6px 14px;
-      color: var(--text-muted);
-      font-size: 0.76rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Noto Sans SC', sans-serif;
-    }
-    .compact-btn:hover { border-color: var(--text-dim); color: var(--text-primary); }
-    .compact-btn.active { border-color: var(--accent-cool); color: var(--accent-cool); background: rgba(122,162,247,0.08); }
-
-    /* Mobile responsive — compact adjustments */
-    @media (max-width: 600px) {
-      .container { padding: 28px 14px 60px; }
-      .header { margin-bottom: 28px; }
-      .header h1 { font-size: 1.8rem; }
-      .form-card { padding: 22px 18px; border-radius: 16px; }
-      .field { margin-bottom: 22px; }
-      .generate-btn { padding: 14px 20px; margin-top: 24px; border-radius: 12px; }
-
-      .compact-toggle { display: block; }
-
-      /* ── Compact block layout ── */
-      .compact-mode .plan-block {
-        padding: 12px 14px;
-        border-radius: 10px;
-      }
-      .compact-mode .plan-block.first {
-        padding: 12px 14px;
-      }
-      .compact-mode .block-check {
-        width: 18px;
-        height: 18px;
-        right: 12px;
-        top: 12px;
-        border-radius: 5px;
-      }
-      .compact-mode .block-check:checked::after {
-        font-size: 11px;
-      }
-      .compact-mode .block-main {
-        padding-right: 28px;
-      }
-      .compact-mode .first-badge {
-        display: inline-flex;
-        margin-bottom: 4px;
-        padding: 2px 8px;
-        font-size: 0.65rem;
-        animation: none;
-      }
-      .compact-mode .block-time {
-        margin-bottom: 0;
-        font-size: 0.68rem;
-      }
-      .compact-mode .block-start { font-size: 0.68rem; }
-      .compact-mode .block-duration { font-size: 0.62rem; padding: 0 5px; }
-      .compact-mode .block-main {
-        margin-bottom: 2px;
-        gap: 6px;
-      }
-      .compact-mode .block-icon { font-size: 0.95rem; }
-      .compact-mode .block-action {
-        font-size: 1.05rem;
-        line-height: 1.2;
-      }
-      .compact-mode .block-meta { gap: 6px; }
-      .compact-mode .block-tag {
-        font-size: 0.64rem;
-        padding: 1px 6px;
-      }
-      /* Collapsible desc */
-      .compact-mode .block-desc {
-        display: none;
-        font-size: 0.74rem;
-        margin-top: 6px;
-        padding-top: 6px;
-        border-top: 1px dashed var(--border);
-      }
-      .compact-mode .plan-block.desc-open .block-desc {
-        display: block;
-      }
-      .compact-mode .plan-block::after {
-        content: '⋯';
-        position: absolute;
-        right: 12px;
-        bottom: 8px;
-        font-size: 0.7rem;
-        color: var(--text-dim);
-        opacity: 0.5;
-      }
-      .compact-mode .plan-block.desc-open::after {
-        content: '∧';
-      }
-
-      /* Subtasks in compact */
-      .compact-mode .block-subtasks {
-        margin-top: 8px;
-        padding-top: 6px;
-      }
-      .compact-mode .subtasks-label { font-size: 0.65rem; margin-bottom: 4px; }
-      .compact-mode .subtask-item { font-size: 0.8rem; line-height: 1.4; }
-
-      /* Summary bar compact */
-      .compact-mode .summary-bar {
-        padding: 10px 14px;
-        gap: 10px;
-        border-radius: 10px;
-        flex-wrap: wrap;
-      }
-      .compact-mode .summary-sep { height: 24px; }
-      .compact-mode .summary-value { font-size: 0.85rem; }
-      .compact-mode .summary-label { font-size: 0.62rem; }
-      .compact-mode .summary-hint { display: none; }
-
-      /* Low power compact */
-      .compact-mode .lowpower-block { padding: 10px 14px; margin-bottom: 4px; }
-      .compact-mode .lowpower-time { font-size: 0.66rem; }
-      .compact-mode .lowpower-action { font-size: 0.82rem; }
-      .compact-mode .lowpower-note { font-size: 0.68rem; }
-      /* Low power checkbox position */
-      .lowpower-block .block-check { right: 12px; top: 10px; width: 18px; height: 18px; border-radius: 5px; }
-
-      /* Non-compact mobile still gets some reduction */
-      .plan-block { padding: 14px 16px; }
-      .block-action { font-size: 1.15rem; }
-
-      /* ── 1. PLAN HEADER: two-row layout on mobile ── */
-      .plan-header {
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 20px;
-      }
-      .plan-title { order: -1; width: 100%; margin-bottom: 2px; }
-      .back-btn { font-size: 0.78rem; padding: 6px 10px; flex-shrink: 0; }
-      .copy-btn { font-size: 0.78rem; padding: 6px 10px; flex-shrink: 0; }
-
-      /* ── 2. SUMMARY BAR: always wrap on mobile ── */
-      .summary-bar { flex-wrap: wrap; gap: 10px; }
-      .summary-sep { display: none; }
-      .summary-item { min-width: 0; flex: 1 1 auto; }
-      .summary-hint { display: none; }
-
-      /* ── 3. LIVE BAR: wrap on mobile ── */
-      .live-bar { flex-wrap: wrap; gap: 6px; }
-      .live-clock { font-size: 1.1rem; }
-      .live-countdown {
-        white-space: normal;
-        word-break: break-all;
-        padding: 3px 8px;
-        font-size: 0.72rem;
-      }
-
-      /* ── 4. LATE NIGHT BANNER: wrap ── */
-      .late-night-banner { flex-wrap: wrap; }
-      .late-night-dismiss {
-        width: 100%;
-        text-align: center;
-        margin-left: 0;
-        margin-top: 6px;
-      }
-
-      /* ── 5. CELEBRATE TOAST: allow wrap ── */
-      .celebrate-toast {
-        white-space: normal;
-        font-size: 1.1rem;
-        padding: 16px 28px;
-      }
-
-      /* ── 6. BUTTON GROUPS: mobile-friendly ── */
-      .btn-group { gap: 6px; }
-      .btn-group.two-col { gap: 6px; }
-      #goalGroup {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-      }
-      .opt-btn {
-        min-width: 60px;
-        padding: 9px 6px;
-        font-size: 0.82rem;
-        min-width: 0;
-      }
-      .opt-btn .opt-icon { font-size: 1.1rem; }
-      .energy-group .opt-btn,
-      .compact-group .opt-btn {
-        padding: 7px 10px;
-        font-size: 0.82rem;
-        min-width: 0;
-      }
-
-      /* ── 7. KEY FLEX CHILDREN: min-width: 0 ── */
-      .block-main { min-width: 0; }
-      .block-action { min-width: 0; overflow-wrap: break-word; word-break: break-word; }
-      .block-meta { min-width: 0; flex-wrap: wrap; }
-      .block-tag { flex-shrink: 0; }
-      .block-duration { flex-shrink: 0; }
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-    /* Selection */
-    ::selection { background: rgba(255,184,108,0.2); color: var(--text-primary); }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-</head>
-<body>
-<div class="container">
-
-  <!-- HEADER -->
-  <header class="header">
-    <svg class="header-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="24" cy="24" r="22" stroke="#FFB86C" stroke-width="1.5" stroke-opacity="0.4"/>
-      <path d="M24 10C24 10 16 18 16 26C16 30.4183 19.5817 34 24 34C28.4183 34 32 30.4183 32 26C32 18 24 10 24 10Z" fill="#FFB86C" fill-opacity="0.2" stroke="#FFB86C" stroke-width="1.5"/>
-      <circle cx="24" cy="26" r="4" fill="#FFB86C" fill-opacity="0.7"/>
-      <line x1="24" y1="6" x2="24" y2="10" stroke="#FFB86C" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="24" y1="38" x2="24" y2="42" stroke="#FFB86C" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="6" y1="26" x2="10" y2="26" stroke="#FFB86C" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="38" y1="26" x2="42" y2="26" stroke="#FFB86C" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <h1>Evening Anchor</h1>
-    <p>给自己一个值得的夜晚</p>
-  </header>
-
-  <!-- FORM -->
-  <div class="form-card" id="formCard">
-    <div class="late-night-banner" id="lateNightBanner">
-      <span>🌙</span>
-      <div>
-        <span class="ln-time" id="lnCurrentTime"></span>
-        <div>深夜了，帮你精简到最核心的几项 →</div>
-        <div class="ln-hint">已隐藏晚餐安排、今晚目标、明日事项（精力不足时默认休息）</div>
-      </div>
-      <button class="late-night-dismiss" onclick="dismissLateNight()">显示全部</button>
-    </div>
-
-    <div class="field" data-late="keep">
-      <div class="field-label"><span class="emoji">🕐</span>预计下班到家时间</div>
-      <div class="wheel-picker" id="picker-arrivalTime">
-        <input type="time" id="arrivalTime" value="19:30" />
-      </div>
-    </div>
-
-    <div class="field" data-late="keep">
-      <div class="field-label"><span class="emoji">⚡</span>当前精力状态</div>
-      <div class="btn-group compact-group energy-group" id="energyGroup">
-        <button class="opt-btn" data-value="low" onclick="selectOpt(this,'energy')">
-          <span class="opt-icon">🪫</span>
-          <span class="opt-text">低</span>
-        </button>
-        <button class="opt-btn selected" data-value="mid" onclick="selectOpt(this,'energy')">
-          <span class="opt-icon">🟡</span>
-          <span class="opt-text">中</span>
-        </button>
-        <button class="opt-btn" data-value="high" onclick="selectOpt(this,'energy')">
-          <span class="opt-icon">🔋</span>
-          <span class="opt-text">高</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="field" data-late="hide">
-      <div class="field-label"><span class="emoji">🍽️</span>晚餐安排</div>
-      <div class="btn-group" id="sceneGroup">
-        <button class="opt-btn selected-cool" data-value="alone" onclick="selectOpt(this,'scene')">
-          <span class="opt-icon">🍜</span>
-          <span>独自用餐</span>
-        </button>
-        <button class="opt-btn" data-value="couple" onclick="selectOpt(this,'scene')">
-          <span class="opt-icon">💑</span>
-          <span>和伴侣吃</span>
-        </button>
-        <button class="opt-btn" data-value="parents" onclick="selectOpt(this,'scene')">
-          <span class="opt-icon">🏠</span>
-          <span>回父母家吃</span>
-        </button>
-      </div>
-      <div class="conditional-field" id="parentsReturnField">
-        <div style="margin-top:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <span style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">出发时间</span>
-          <div class="wheel-picker" id="picker-parentsReturnTime">
-            <input type="time" id="parentsReturnTime" value="18:30" />
-          </div>
-          <span style="font-size:0.78rem; color:var(--text-dim);">出门去父母家的时间</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="field" data-late="hide">
-      <div class="field-label"><span class="emoji">🎯</span>今晚主目标</div>
-      <div class="btn-group" id="goalGroup">
-        <button class="opt-btn" data-value="rest" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">🛋️</span>
-          <span>休息</span>
-        </button>
-        <button class="opt-btn selected-cool" data-value="productivity" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">📋</span>
-          <span>生产力</span>
-        </button>
-
-        <button class="opt-btn" data-value="hobby" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">🎨</span>
-          <span>爱好</span>
-        </button>
-        <button class="opt-btn" data-value="health" onclick="selectOpt(this,'goal')">
-          <span class="opt-icon">🏃</span>
-          <span>健康</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="field" data-late="hide">
-      <div class="field-label"><span class="emoji">⏰</span>明日重要事项</div>
-      <div class="btn-group compact-group" id="tomorrowGroup">
-        <button class="opt-btn" data-value="none" onclick="selectOpt(this,'tomorrow')">
-          <span class="opt-icon">🈚</span>
-          <span class="opt-text">无</span>
-        </button>
-        <button class="opt-btn" data-value="has" onclick="selectOpt(this,'tomorrow')">
-          <span class="opt-icon">📌</span>
-          <span class="opt-text">有</span>
-        </button>
-      </div>
-      <div class="conditional-field" id="tomorrowTimeField">
-        <div style="margin-top:10px;">
-          <div class="wheel-picker" id="picker-tomorrowTime">
-            <input type="time" id="tomorrowTime" value="08:00" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="field" data-late="keep">
-      <div class="field-label"><span class="emoji">🔥</span>今晚必须完成的事</div>
-      <textarea id="mustDoInput" rows="3" placeholder="例如：写完项目报告初稿、给妈妈打电话、还信用卡……&#10;也可以留空"></textarea>
-    </div>
-
-    <div class="field" data-late="keep">
-      <div class="field-label"><span class="emoji">🌙</span>预计入睡时间</div>
-      <div class="wheel-picker" id="picker-sleepTimeInput">
-        <input type="time" id="sleepTimeInput" value="23:00" />
-      </div>
-    </div>
-
-    <button class="generate-btn" id="generateBtn" onclick="generatePlan()">
-      <span class="btn-text">生成我的晚间计划 →</span>
-      <span class="spinner"></span>
-    </button>
-  </div>
-
-  <!-- PLAN VIEW -->
-  <div class="plan-view" id="planView">
-    <div class="plan-header">
-      <button class="back-btn" onclick="resetForm()">← 重新填写</button>
-      <div class="plan-title">📋 今晚安排</div>
-      <button class="copy-btn" id="exportBtn" onclick="exportImage()">🖼 导出</button>
-      <button class="copy-btn" id="copyBtn" onclick="copyPlan()">📋 复制</button>
-    </div>
-
-    <div class="live-bar" id="liveBar">
-      <span class="live-clock" id="liveClock">--:--</span>
-      <span class="live-countdown" id="liveCountdown"></span>
-    </div>
-
-    <div class="summary-bar" id="summaryBar">
-      <!-- filled by JS -->
-    </div>
-
-    <div class="progress-wrap" id="progressWrap" style="display:none; margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <span style="font-size:0.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;">完成进度</span>
-        <span id="progressText" style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent-low);">0/0</span>
-      </div>
-      <div style="height:4px;background:var(--bg-input);border-radius:4px;overflow:hidden;">
-        <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent-low),var(--accent-cool));border-radius:4px;transition:width 0.4s ease;"></div>
-      </div>
-    </div>
-
-    <div class="compact-toggle">
-      <button class="compact-btn" id="compactBtn" onclick="toggleCompact()">📐 紧凑模式</button>
-    </div>
-    <div class="plan-blocks" id="planBlocks">
-      <!-- filled by JS -->
-    </div>
-
-    <div class="lowpower-toggle">
-      <button class="lowpower-trigger" id="lowpowerToggle" onclick="toggleLowPower()">
-        <span>🔋</span>
-        <span id="lowpowerLabel">精力不支时的保底方案</span>
-      </button>
-      <div class="lowpower-section" id="lowpowerSection">
-        <div class="lowpower-header">当今晚感觉撑不住时，打开这个清单，只需要照做</div>
-        <div id="lowpowerBlocks"></div>
-      </div>
-    </div>
-
-    <div class="footer-note">照着第一步开始，其他的会自动到来 🌙</div>
-  </div>
-
-</div>
-
-<script>
   /* ─── STATE ─── */
   const state = {
     energy: 'mid',
@@ -1379,7 +80,25 @@
     }
   }
 
-  /* ─── TIME UTILS ─── */
+  /* ─── ADD MINUTES TO TIME ─── */
+  // Returns { time: 'HH:MM', crossedMidnight: boolean }
+  // crossedMidnight indicates if we passed midnight during the addition
+  function addMinutesWithFlag(timeStr, mins) {
+    const [h, m] = timeStr.split(':').map(Number);
+    const totalMins = h * 60 + m + mins;
+    const days = Math.floor(totalMins / (24 * 60));
+    const nh = Math.floor((totalMins % (24 * 60)) / 60);
+    const nm = totalMins % 60;
+    return {
+      time: `${String(nh).padStart(2,'0')}:${String(nm).padStart(2,'0')}`,
+      crossedMidnight: days > 0
+    };
+  }
+
+  function addMinutes(timeStr, mins) {
+    return addMinutesWithFlag(timeStr, mins).time;
+  }
+
   function clockMins(timeStr) {
     const [h, m] = timeStr.split(':').map(Number);
     return h * 60 + m;
@@ -1391,47 +110,6 @@
     return diff;
   }
 
-  /* ─── PLAN BLOCK UTILS (shared by buildPlan / buildLowPowerPlan) ─── */
-  // Shared time-logic for building plan blocks.
-  // @param {Array}   blocks     - target array to push into
-  // @param {object}  cr         - {val} cursor ref (mutated in-place)
-  // @param {number}  total      - totalAvail minutes
-  // @param {number}  arrivalMins - minutes since midnight of arrival time
-  // @param {number}  dur          - requested duration
-  // @returns {object|null}         - created block, or null if not enough time
-  function _makeBlock(blocks, cr, total, arrivalMins, dur) {
-    if (cr.val + dur > total) { dur = total - cr.val; if (dur < 5) return null; }
-    const start = _toTimeStr(arrivalMins, cr.val);
-    cr.val += dur;
-    const end = _toTimeStr(arrivalMins, cr.val);
-    return { time: { start, end } };
-  }
-
-  // Full plan version — fields: icon, action, type, tag, desc, [extra]
-  function makeBlock(blocks, cr, total, arrivalMins, dur, icon, action, type, tag, desc, extra) {
-    const b = _makeBlock(blocks, cr, total, arrivalMins, dur);
-    if (!b) return null;
-    Object.assign(b, { icon, action, type, tag, desc });
-    if (extra) Object.assign(b, extra);
-    return b;
-  }
-
-  // Low-power plan version — fields: icon (fixed ⭐), action, note
-  function makeBlockLow(blocks, cr, total, arrivalMins, dur, action, note) {
-    const b = _makeBlock(blocks, cr, total, arrivalMins, dur);
-    if (!b) return null;
-    Object.assign(b, { icon: '⭐', action, note });
-    return b;
-  }
-
-  // Shared time-string formatter (avoids duplication in buildPlan / buildLowPowerPlan)
-  function _toTimeStr(arrivalMins, offsetMins) {
-    const absMins = (arrivalMins + offsetMins) % (24 * 60);
-    const h = Math.floor(absMins / 60);
-    const m = absMins % 60;
-    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-  }
-
   function escapeHtml(value) {
     return String(value)
       .replace(/&/g, '&amp;')
@@ -1439,6 +117,12 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  }
+
+  /* ─── TIME RANGE LABEL ─── */
+  function timeRange(start, mins) {
+    const result = addMinutesWithFlag(start, mins);
+    return { start, end: result.time, crossedMidnight: result.crossedMidnight };
   }
 
   /* ─── TASK LIBRARY ─── */
@@ -1452,8 +136,12 @@
     { cat: '饮食', icon: '🍵', action: '泡茶 + 小点心', dur: 15, energy: 'low', desc: '慢悠悠泡杯茶，配几块饼干或水果' },
 
     // ─ 恢复 ─
-    { cat: '恢复', icon: '🚿', action: '洗个热水澡', dur: 20, energy: 'low', desc: '让热水冲走一天的疲惫，45℃左右泡20分钟' },
-    { cat: '恢复', icon: '🦶', action: '泡脚 + 拉伸', dur: 20, energy: 'low', desc: '热水泡脚15分钟，顺手做几组简单拉伸' },
+    { cat: '恢复', icon: '🧘', action: '15分钟正念冥想', dur: 15, energy: 'low', desc: '找一个安静的地方坐下，专注呼吸' },
+    { cat: '恢复', icon: '😴', action: '20分钟小睡', dur: 20, energy: 'low', desc: '定好闹钟，趴在桌上或躺沙发上' },
+    { cat: '恢复', icon: '🚿', action: '洗个热水澡', dur: 20, energy: 'low', desc: '让热水冲走一天的疲惫' },
+    { cat: '恢复', icon: '🦶', action: '泡脚 + 拉伸', dur: 20, energy: 'low', desc: '热水泡脚15分钟，顺便做几组简单拉伸' },
+    { cat: '恢复', icon: '☀️', action: '户外散步15分钟', dur: 15, energy: 'mid', desc: '下楼走一圈，呼吸新鲜空气' },
+    { cat: '恢复', icon: '👂', action: '听播客/音乐闭目养神', dur: 20, energy: 'low', desc: '戴上耳机，什么都不做，只听' },
 
     // ─ 学习 ─
     { cat: '学习', icon: '📖', action: '系统学习（看课程/做题）', dur: 45, energy: 'high', desc: '打开课程视频或教材，完整学习一个章节' },
@@ -1526,12 +214,14 @@
     // ─ 恢复/身心放松 ─
     { cat: '恢复', icon: '🧘', action: '正念冥想', dur: 15, energy: 'low', desc: '找一个安静的地方，专注呼吸，10-15分钟' },
     { cat: '恢复', icon: '😴', action: '小憩 20 分钟', dur: 20, energy: 'low', desc: '定好闹钟，趴桌或躺沙发，快速充电' },
+    { cat: '恢复', icon: '🚿', action: '洗个热水澡', dur: 20, energy: 'low', desc: '让热水冲走一天的疲惫，45℃左右泡20分钟' },
+    { cat: '恢复', icon: '🦶', action: '泡脚 + 拉伸', dur: 20, energy: 'low', desc: '热水泡脚15分钟，顺手做几组简单拉伸' },
     { cat: '恢复', icon: '☀️', action: '户外散步 15 分钟', dur: 15, energy: 'mid', desc: '下楼走一圈，晒晒太阳，补充维生素D' },
     { cat: '恢复', icon: '👂', action: '听播客/白噪音闭目', dur: 20, energy: 'low', desc: '戴上耳机，白噪音或喜欢的播客，什么都不想' },
     { cat: '恢复', icon: '🫁', action: '呼吸练习/腹式呼吸', dur: 10, energy: 'low', desc: '4秒吸气-7秒屏息-8秒呼气，做5组' },
     { cat: '恢复', icon: '🎵', action: '音乐疗愈/颂钵', dur: 20, energy: 'low', desc: '听一段疗愈音乐或颂钵音，躺着完全放松' },
 
-    // ─ 恢复/饮食 ─
+    // ─ 营养/饮食 ─
     { cat: '恢复', icon: '🍵', action: '泡茶/花草茶 + 健康零食', dur: 20, energy: 'low', desc: '泡杯热茶，配点坚果或水果，犒劳自己' },
     { cat: '恢复', icon: '🥤', action: '准备明日健康便当', dur: 25, energy: 'mid', desc: '提前备好食材或便当，明早省心又健康' },
 
@@ -1631,10 +321,26 @@
 
   /* ─── GOAL CONFIG ─── */
   const goalConfig = {
-    rest:     { icon: '🛋️', label: '休息',     mainLabel: '放松身心' },
-    productivity: { icon: '📋', label: '生产力', mainLabel: '专注任务' },
-    hobby:    { icon: '🎨', label: '爱好',     mainLabel: '投入爱好' },
-    health:   { icon: '🏃', label: '健康',     mainLabel: '身心锻炼' }
+    rest: {
+      icon: '🛋️', label: '休息',
+      mainLabel: '放松身心',
+      blocks: (start, E) => []
+    },
+    productivity: {
+      icon: '📋', label: '生产力',
+      mainLabel: '专注任务',
+      blocks: (start, E) => []
+    },
+    hobby: {
+      icon: '🎨', label: '爱好',
+      mainLabel: '投入爱好',
+      blocks: (start, E) => []
+    },
+    health: {
+      icon: '🏃', label: '健康',
+      mainLabel: '身心锻炼',
+      blocks: (start, E) => []
+    }
   };
 
   /* ─── SCENE LABELS ─── */
@@ -1650,18 +356,45 @@
       ? (24 * 60 - arrivalMins) + sleepMins  // crosses midnight
       : sleepMins - arrivalMins;             // same day
     
-    const cursor = { val: 0 }; // mutable cursor (minutes since arrival)
+    let cursorMins = 0; // minutes since arrival (relative)
+    
+    const toTimeStr = (offsetMins) => {
+      const absMins = (arrivalMins + offsetMins) % (24 * 60);
+      const h = Math.floor(absMins / 60);
+      const m = absMins % 60;
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    };
+    
+    const elapsedSinceArrival = () => cursorMins;
+    const remainingUntilSleep = () => totalAvail - cursorMins;
 
     const isLow = energy === 'low';
     const isHigh = energy === 'high';
+    const isMid = energy === 'mid';
     const hasTomorrow = tomorrow === 'has';
     
+    function makeBlock(dur, icon, action, type, tag, desc, extra = {}) {
+      if (cursorMins + dur > totalAvail) {
+        dur = totalAvail - cursorMins;
+        if (dur < 5) return null;
+      }
+      const start = toTimeStr(cursorMins);
+      cursorMins += dur;
+      const end = toTimeStr(cursorMins);
+      return {
+        time: { start, end },
+        icon, action, type, tag, desc,
+        ...extra
+      };
+    }
 
     // ── BLOCK 1: Unwind (always first, < 5min) ──
-    b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 5, '👋', '换衣服 + 收好随身物品', 'easy', '恢复', '脱掉上班装，换上居家服，把包放好。立刻进入家的状态。', { cat: '恢复', isFirst: true });
+    let b = makeBlock(5, '👋', '换衣服 + 收好随身物品', 'easy', '恢复', '脱掉上班装，换上居家服，把包放好。立刻进入家的状态。', { cat: '恢复', isFirst: true });
+    if (b) blocks.push(b);
 
     // ── BLOCK 2: Quick reset ──
-    b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 5, '💧', '喝杯水 + 简单整理', 'easy', '恢复', '补充水分，顺手把桌面/沙发收拾一下。');
+    b = makeBlock(5, '💧', '喝杯水 + 简单整理', 'easy', '恢复', '补充水分，顺手把桌面/沙发收拾一下。');
+    if (b) blocks.push(b);
 
     // ── BLOCK 3: Dinner (scene-aware) ──
     if (scene === 'parents' && parentsReturnTime) {
@@ -1676,33 +409,41 @@
       }
 
       if (homeMins >= 10) {
-        b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '👋', '换衣服 + 收拾东西', 'easy', '恢复', '换上干净衣服，带上给爸妈的东西');
+        b = makeBlock(10, '👋', '换衣服 + 收拾东西', 'easy', '恢复', '换上干净衣服，带上给爸妈的东西');
+        if (b) blocks.push(b);
       }
-      if (homeMins >= 30 && cursor.val < homeMins - 20) {
-        const snackDur = Math.min(15, homeMins - 20 - cursor.val);
+      if (homeMins >= 30 && cursorMins < homeMins - 20) {
+        const snackDur = Math.min(15, homeMins - 20 - cursorMins);
         if (snackDur >= 5) {
-          b = makeBlock(blocks, cursor, totalAvail, arrivalMins, snackDur, '🍽️', '在家先垫一点', 'easy', '饮食', '时间充裕的话先吃点，不用饿着去父母家');
+          b = makeBlock(snackDur, '🍽️', '在家先垫一点', 'easy', '饮食', '时间充裕的话先吃点，不用饿着去父母家');
+          if (b) blocks.push(b);
         }
       }
       // Skip to parents return time
-      if (cursor.val < homeMins) {
-        cursor.val = homeMins;
+      if (cursorMins < homeMins) {
+        cursorMins = homeMins;
       }
       // Depart to parents
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '🚗', '出发去父母家', 'easy', '交通', '带上给爸妈的东西，出发');
+      b = makeBlock(10, '🚗', '出发去父母家', 'easy', '交通', '带上给爸妈的东西，出发');
+      if (b) blocks.push(b);
       // Dinner at parents
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 90, '🍽️', '在父母家吃饭', 'warm', '陪伴', '和爸妈一起吃饭、聊天。放下手机，好好陪他们');
+      b = makeBlock(90, '🍽️', '在父母家吃饭', 'warm', '陪伴', '和爸妈一起吃饭、聊天。放下手机，好好陪他们');
+      if (b) blocks.push(b);
       // Return home
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '🏠', '回自己家', 'easy', '恢复', '安全到家，简单收拾一下');
+      b = makeBlock(10, '🏠', '回自己家', 'easy', '恢复', '安全到家，简单收拾一下');
+      if (b) blocks.push(b);
     } else if (scene === 'couple') {
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 35, '🍽️', '和伴侣一起做/吃晚餐', 'easy', '陪伴', '一起做饭或者叫外卖，边吃边聊聊天');
+      b = makeBlock(35, '🍽️', '和伴侣一起做/吃晚餐', 'easy', '陪伴', '一起做饭或者叫外卖，边吃边聊聊天');
+      if (b) blocks.push(b);
     } else {
       const dinnerDur = isLow ? 20 : (isHigh ? 40 : 30);
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, dinnerDur, '🍽️', '独自用餐', 'easy', '饮食', '不要刷手机，好好吃饭。可以配点音乐或播客');
+      b = makeBlock(dinnerDur, '🍽️', '独自用餐', 'easy', '饮食', '不要刷手机，好好吃饭。可以配点音乐或播客');
+      if (b) blocks.push(b);
     }
 
     // ── BUFFER ──
-    b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 10, '⏸', '缓冲休息', 'rest', '恢复', '坐着发会儿呆，让身体从"工作模式"切换出来');
+    b = makeBlock(10, '⏸', '缓冲休息', 'rest', '恢复', '坐着发会儿呆，让身体从"工作模式"切换出来');
+    if (b) blocks.push(b);
 
     // ── MUST-DO TIME ESTIMATOR ──────────────────────────────────────
     // Analyzes natural language text to estimate how many minutes a task takes.
@@ -1727,7 +468,7 @@
       // 2. Keyword → rough duration estimate
       const SCORE = {
         // Quick actions (<= 10 min)
-        '喝水': 5, '打电话': 10, '发消息': 5, '回邮件': 10,
+        '喝水': 5, '喝水': 5, '打电话': 10, '发消息': 5, '回邮件': 10,
         '查': 5, '看': 10, '刷': 10, '回复': 10, '接': 5, '订': 10,
         // Moderate (15-30 min)
         '洗澡': 20, '洗头': 20, '洗发': 20, '收拾': 20, '整理': 20,
@@ -1738,8 +479,8 @@
         '刷手机': 20, '刷视频': 20, '刷短视频': 15, '短视频': 15,
         '敷面膜': 15, '面膜': 15,
         // Medium (30-60 min)
-        '做饭': 40, '做晚饭': 40, '做午饭': 30, '煮饭': 30,
-        '看书': 30, '读书': 30, '阅读': 30,
+        '做饭': 40, '做晚饭': 40, '做午饭': 30, '做午饭': 30, '煮饭': 30,
+        '看书': 30, '读书': 30, '阅读': 30, '看书': 30,
         '复习': 30, '复习功课': 40,
         '刷题': 30, '做题': 30, '练题': 30, '做作业': 40,
         '写': 30, '写作': 45, '写文章': 45, '写东西': 30, '写字': 20,
@@ -1747,8 +488,8 @@
         '运动': 40, '跑步': 30, '健身': 40, '锻炼': 40, '瑜伽': 30,
         '冥想': 15, '正念': 15,
         '做家务': 30, '家务': 30, '清洁': 30, '打扫': 25,
-        '画画': 45, '绘画': 45,
-        '练琴': 30, '练乐器': 30, '乐器': 30,
+        '画画': 45, '绘画': 45, '画画': 45,
+        '练琴': 30, '乐器': 30, '练乐器': 30, '乐器': 30,
         // Heavy (> 45 min)
         '视频剪辑': 60, '剪辑': 60, '修图': 30, 'PS': 45,
         '学英语': 45, '英语': 45,
@@ -1776,20 +517,22 @@
       const estDur = estimateDuration(primary);
       // Target 70% of estimated duration, min 15, max remaining time
       const dur = estDur
-        ? Math.max(15, Math.min(Math.round(estDur * 0.7), totalAvail - cursor.val))
-        : Math.min(30, totalAvail - cursor.val);
+        ? Math.max(15, Math.min(Math.round(estDur * 0.7), remainingUntilSleep()))
+        : Math.min(30, remainingUntilSleep());
 
       if (dur >= 5) {
-        b = makeBlock(blocks, cursor, totalAvail, arrivalMins, dur, '🔥', primary, 'focus', '杂务',
+        b = makeBlock(dur, '🔥', primary, 'focus', '杂务',
           estDur ? `根据内容估计约需 ${estDur} 分钟，先专注完成核心部分` : '这是你今晚最重要的事，专注完成它',
-          { sub: extraItems, cat: '杂务' });
+          { sub: extraItems, cat: '杂务' }
+        );
+        if (b) blocks.push(b);
       }
     }
 
     // ── MAIN GOAL BLOCKS ──
     const usedIdx = []; // track used task library indices to avoid repeats
     function makeTaskBlock(tasks, mins) {
-      const actualMins = Math.min(mins, totalAvail - cursor.val);
+      const actualMins = Math.min(mins, remainingUntilSleep());
       if (actualMins < 5) return false;
       let task = null;
       for (const t of tasks) {
@@ -1798,10 +541,11 @@
       if (!task) task = tasks[0];
       if (!task) return false;
       const dur = Math.min(task.dur, actualMins);
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, dur, task.icon, task.action,
+      b = makeBlock(dur, task.icon, task.action,
         task.energy === 'high' ? 'focus' : (task.energy === 'mid' ? 'warm' : 'rest'),
         task.cat, task.desc,
-        { cat: task.cat });
+        { cat: task.cat }
+      );
       if (b) {
         usedIdx.push(task._idx);
         blocks.push(b);
@@ -1810,78 +554,108 @@
       return false;
     }
     function addBuffer(mins) {
-      if (totalAvail - cursor.val < mins) mins = totalAvail - cursor.val;
+      if (remainingUntilSleep() < mins) mins = remainingUntilSleep();
       if (mins < 5) return;
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, mins, '☕', '休息一下', 'rest', '恢复', '站起来走动，伸展一下，喝点水', { cat: '恢复' });
+      b = makeBlock(mins, '☕', '休息一下', 'rest', '恢复', '站起来走动，伸展一下，喝点水', { cat: '恢复' });
+      if (b) blocks.push(b);
     }
 
-    // ── GOAL CONFIG FOR PLAN BUILDER ──
-    const GOAL_PLAN_CONFIG = {
-      productivity: {
-        high: { cats1: ['学习', '杂务'], dur1: 60, buf: 10, cats2: ['学习', '杂务'], dur2: 20 },
-        mid:  { cats1: ['学习', '杂务'], dur1: 30, buf: 10, cats2: ['杂务', '学习'], dur2: 15, need: 20 },
-        low:  { cats1: ['杂务', '学习'], dur1: 15 }
-      },
-      health: {
-        high: { cats1: ['运动', '恢复'], dur1: 50, buf: 10, cats2: ['个人护理', '恢复'], dur2: 15 },
-        mid:  { cats1: ['运动', '恢复', '个人护理'], dur1: 30, buf: 5, cats2: ['恢复', '个人护理'], dur2: 15, need: 20 },
-        low:  { cats1: ['恢复', '个人护理'], dur1: 15 }
-      },
-      hobby: {
-        high: { cats1: ['爱好', '运动'], dur1: 60, buf: 10, cats2: ['爱好', '运动'], dur2: 20, need: 30 },
-        mid:  { cats1: ['爱好', '运动'], dur1: 35 },
-        low:  { cats1: ['爱好', '恢复', '运动'], dur1: 15 }
-      },
-      rest: {
-        high: { cats1: ['娱乐放松', '爱好', '恢复'], dur1: 40, buf: 5, cats2: ['娱乐放松', '爱好'], dur2: 15, need: 25, useIsLow: false },
-        mid:  { cats1: ['娱乐放松', '爱好', '恢复'], dur1: 40, buf: 5, cats2: ['娱乐放松', '爱好'], dur2: 15, need: 25 },
-        low:  { cats1: ['娱乐放松', '恢复', '陪伴'], dur1: 45, cats2: ['娱乐放松', '恢复'], dur2: 15, need: 20 }
-      }
-    };
-
-    // ── GOAL BLOCK BUILDER ──
-    function addGoalBlocks(goal, energy) {
-      const cfg = GOAL_PLAN_CONFIG[goal];
-      if (!cfg) return;
-      
-      const e = isLow ? 'low' : (isHigh ? 'high' : 'mid');
-      const c = cfg[e] || cfg.mid;
-      if (!c) return;
-      
-      // First task block
-      const tasks = pickTasks(c.cats1, energy, c.dur1 + 20, usedIdx);
-      makeTaskBlock(tasks, c.dur1);
-      
-      // Buffer and second task block (if configured)
-      if (c.buf && (c.need === undefined || totalAvail - cursor.val >= c.need)) {
-        addBuffer(c.buf);
-        if (c.cats2) {
-          const tasks2 = pickTasks(c.cats2, energy, c.dur2 + 15, usedIdx);
-          makeTaskBlock(tasks2, c.dur2);
+    if (goal === 'productivity') {
+      if (isHigh) {
+        const tasks = pickTasks(['学习', '杂务'], energy, 90, usedIdx);
+        makeTaskBlock(tasks, 60);
+        addBuffer(10);
+        const tasks2 = pickTasks(['学习', '杂务'], energy, 30, usedIdx);
+        makeTaskBlock(tasks2, 20);
+      } else if (isMid) {
+        const tasks = pickTasks(['学习', '杂务'], energy, 45, usedIdx);
+        makeTaskBlock(tasks, 30);
+        if (remainingUntilSleep() >= 20) {
+          addBuffer(10);
+          const tasks2 = pickTasks(['杂务', '学习'], energy, 20, usedIdx);
+          makeTaskBlock(tasks2, 15);
         }
-      } else if (c.cats2 && (c.need === undefined || totalAvail - cursor.val >= c.need)) {
-        const tasks2 = pickTasks(c.cats2, energy, c.dur2 + 15, usedIdx);
-        makeTaskBlock(tasks2, c.dur2);
+      } else {
+        const tasks = pickTasks(['杂务', '学习'], energy, 20, usedIdx);
+        makeTaskBlock(tasks, 15);
       }
     }
 
-    // ── MAIN GOAL BLOCKS ──
-    addGoalBlocks(goal, energy);
+    if (goal === 'health') {
+      if (isHigh) {
+        const tasks = pickTasks(['运动', '恢复'], energy, 60, usedIdx);
+        makeTaskBlock(tasks, 50);
+        addBuffer(10);
+        const tasks2 = pickTasks(['个人护理', '恢复'], energy, 20, usedIdx);
+        makeTaskBlock(tasks2, 15);
+      } else if (isMid) {
+        const tasks = pickTasks(['运动', '恢复', '个人护理'], energy, 35, usedIdx);
+        makeTaskBlock(tasks, 30);
+        if (remainingUntilSleep() >= 20) {
+          addBuffer(5);
+          const tasks2 = pickTasks(['恢复', '个人护理'], energy, 20, usedIdx);
+          makeTaskBlock(tasks2, 15);
+        }
+      } else {
+        const tasks = pickTasks(['恢复', '个人护理'], energy, 20, usedIdx);
+        makeTaskBlock(tasks, 15);
+      }
+    }
+
+    if (goal === 'hobby') {
+      if (isHigh) {
+        const tasks = pickTasks(['爱好', '运动'], energy, 90, usedIdx);
+        makeTaskBlock(tasks, 60);
+        if (remainingUntilSleep() >= 30) {
+          addBuffer(10);
+          const tasks2 = pickTasks(['爱好', '运动'], energy, 30, usedIdx);
+          makeTaskBlock(tasks2, 20);
+        }
+      } else if (isMid) {
+        const tasks = pickTasks(['爱好', '运动'], energy, 45, usedIdx);
+        makeTaskBlock(tasks, 35);
+      } else {
+        const tasks = pickTasks(['爱好', '恢复', '运动'], energy, 20, usedIdx);
+        makeTaskBlock(tasks, 15);
+      }
+    }
+
+    if (goal === 'rest') {
+      if (isLow) {
+        const tasks = pickTasks(['娱乐放松', '恢复', '陪伴'], energy, 50, usedIdx);
+        makeTaskBlock(tasks, 45);
+        if (remainingUntilSleep() >= 20) {
+          const tasks2 = pickTasks(['娱乐放松', '恢复'], energy, 20, usedIdx);
+          makeTaskBlock(tasks2, 15);
+        }
+      } else {
+        const tasks = pickTasks(['娱乐放松', '爱好', '恢复'], energy, 50, usedIdx);
+        makeTaskBlock(tasks, 40);
+        if (remainingUntilSleep() >= 25) {
+          addBuffer(5);
+          const tasks2 = pickTasks(['娱乐放松', '爱好'], energy, 20, usedIdx);
+          makeTaskBlock(tasks2, 15);
+        }
+      }
+    }
 
     // ── EVENING WIND DOWN ──
     const windDownMins = isLow ? 30 : 45;
-    b = makeBlock(blocks, cursor, totalAvail, arrivalMins, windDownMins, '🌙', '晚间放松时光', 'rest', '娱乐放松', isLow ? '躺着听音乐、翻翻手机、什么都不想' : '洗漱 + 放松阅读/轻度浏览');
+    b = makeBlock(windDownMins, '🌙', '晚间放松时光', 'rest', '娱乐放松', isLow ? '躺着听音乐、翻翻手机、什么都不想' : '洗漱 + 放松阅读/轻度浏览');
+    if (b) blocks.push(b);
 
     // ── TOMORROW PREP ──
     if (hasTomorrow) {
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, 15, '📌', '明日准备', 'easy', '杂务', '整理背包、确认闹钟、列出明天最重要的3件事');
+      b = makeBlock(15, '📌', '明日准备', 'easy', '杂务', '整理背包、确认闹钟、列出明天最重要的3件事');
+      if (b) blocks.push(b);
     }
 
     // ── BEDTIME ROUTINE ──
-    const remaining = totalAvail - cursor.val;
+    const remaining = remainingUntilSleep();
     if (remaining >= 5) {
       const bedMins = Math.min(remaining, 20);
-      b = makeBlock(blocks, cursor, totalAvail, arrivalMins, bedMins, '🛁', '睡前仪式', 'rest', '个人护理', '洗漱、关灯、写3件今天满意的事（可选）');
+      b = makeBlock(bedMins, '🛁', '睡前仪式', 'rest', '个人护理', '洗漱、关灯、写3件今天满意的事（可选）');
+      if (b) blocks.push(b);
     }
 
     return blocks;
@@ -1896,20 +670,45 @@
       ? (24 * 60 - arrivalMins) + sleepMins
       : sleepMins - arrivalMins;
     
-    const cursor = { val: 0 };
+    let cursorMins = 0;
+    
+    const toTimeStr = (offsetMins) => {
+      const absMins = (arrivalMins + offsetMins) % (24 * 60);
+      const h = Math.floor(absMins / 60);
+      const m = absMins % 60;
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    };
+    
+    const remainingUntilSleep = () => totalAvail - cursorMins;
+    
+    function makeBlock(dur, action, note) {
+      if (cursorMins + dur > totalAvail) {
+        dur = totalAvail - cursorMins;
+        if (dur < 5) return null;
+      }
+      const start = toTimeStr(cursorMins);
+      cursorMins += dur;
+      const end = toTimeStr(cursorMins);
+      return { time: { start, end }, action, note };
+    }
 
     let b;
-    b = makeBlockLow(blocks, cursor, totalAvail, arrivalMins, 5, '换衣服、坐下', '不需要做任何事，只是换好衣服');
+    b = makeBlock(5, '换衣服、坐下', '不需要做任何事，只是换好衣服');
+    if (b) blocks.push(b);
 
-    b = makeBlockLow(blocks, cursor, totalAvail, arrivalMins, 20, '简单吃点东西', '热一碗汤、吃点水果，不要勉强做饭');
+    b = makeBlock(20, '简单吃点东西', '热一碗汤、吃点水果，不要勉强做饭');
+    if (b) blocks.push(b);
 
-    b = makeBlockLow(blocks, cursor, totalAvail, arrivalMins, 30, '躺着或坐着，随便干什么', '看手机、听歌、什么都不干都行');
+    b = makeBlock(30, '躺着或坐着，随便干什么', '看手机、听歌、什么都不干都行');
+    if (b) blocks.push(b);
 
-    b = makeBlockLow(blocks, cursor, totalAvail, arrivalMins, 15, '简单洗漱', '刷牙、洗脸就够了');
+    b = makeBlock(15, '简单洗漱', '刷牙、洗脸就够了');
+    if (b) blocks.push(b);
 
-    const remaining = totalAvail - cursor.val;
+    const remaining = remainingUntilSleep();
     if (remaining >= 5) {
-      b = makeBlockLow(blocks, cursor, totalAvail, arrivalMins, Math.min(remaining, 10), '关灯，躺下', '睡不着也没关系，躺着就是休息');
+      b = makeBlock(Math.min(remaining, 10), '关灯，躺下', '睡不着也没关系，躺着就是休息');
+      if (b) blocks.push(b);
     }
 
     return blocks;
@@ -2034,7 +833,7 @@
     // Low power blocks
     const lpHtml = lowPower.map(b => `
       <div class="lowpower-block">
-        <input type="checkbox" class="block-check" onclick="toggleLowDone(this)" />
+        <input type="checkbox" class="block-check" onclick="toggleLowDone(this)" style="position:absolute;right:12px;top:10px;width:18px;height:18px;appearance:none;-webkit-appearance:none;border:2px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;" />
         <span class="lowpower-time">${b.time.start} – ${b.time.end}</span>
         <span class="lowpower-action">${b.action}</span>
         <div class="lowpower-note">${b.note}</div>
@@ -2051,6 +850,11 @@
     startLiveTimer(mainPlan);
     // Cache for copy
     cachedPlan = { arrival, mainPlan, lowPower, sleepTime, mustDo };
+  }
+
+  function parseTime(t) {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
   }
 
   /* ─── TOGGLE LOW POWER ─── */
@@ -2231,7 +1035,7 @@
     const footerNote = planView.querySelector('.footer-note');
 
     // Elements to hide during capture
-    const toHide = [planHeader, liveBar, summaryBar, progressWrap, compactToggle, lowpowerToggle, footerNote];
+    const toHide = [planHeader, liveBar, compactToggle, footerNote];
     const originalDisplays = toHide.map(el => el ? el.style.display : null);
     toHide.forEach(el => { if (el) el.style.display = 'none'; });
 
@@ -2475,6 +1279,8 @@
     document.head.appendChild(s);
   }
 
+  let _activePicker = null;
+
   function openWheel(id) {
     initWheelCss();
     const input = document.getElementById(id);
@@ -2484,6 +1290,7 @@
     // Mark display as open
     const display = document.querySelector(`#picker-${id} .wheel-display`);
     if (display) display.classList.add('open');
+    _activePicker = id;
   }
 
   function renderOverlay(id, curH, curM) {
@@ -2532,6 +1339,8 @@
   function _buildScroll(wrapId, items, selected, inputId, type) {
     const wrap = document.getElementById(wrapId);
     const track = document.getElementById('wtrack-' + type);
+    // Show 4 items (0..3), item at index 1 is the "active" slot (54px tall)
+    const visCount = 4;
     track.innerHTML = '';
     const frag = document.createDocumentFragment();
     items.forEach((v, i) => {
@@ -2584,7 +1393,7 @@
       const step = Math.round(delta / 37);
       const newIdx = Math.max(0, Math.min(items.length - 1, startIdx - step));
       track.style.transform = `translateY(calc(50% - ${newIdx * 37}px))`;
-      _updateActive(track, newIdx, items);
+      _highlightActive(track, newIdx, items);
     }, {passive: true});
     wrap.addEventListener('touchend', e => {
       if (!dragging) return;
@@ -2600,6 +1409,12 @@
       const dir = e.deltaY > 0 ? -1 : 1;
       _commitIdx(currentIdx + dir);
     }, {passive: false});
+  }
+
+  function _highlightActive(track, idx, items) {
+    track.querySelectorAll('.wheel-item').forEach((el, i) => {
+      el.classList.toggle('active', i === idx);
+    });
   }
 
   function _updateActive(track, idx, items) {
@@ -2646,6 +1461,7 @@
     // Remove open state from display
     const display = document.querySelector(`#picker-${id} .wheel-display`);
     if (display) display.classList.remove('open');
+    _activePicker = null;
   }
 
   // Wire up: find all .wheel-picker and attach click → openWheel
@@ -2685,38 +1501,4 @@
   } else {
     bindWheelPickers();
   }
-
-  // Fallback: delegate click on .wheel-picker → openWheel
-  document.addEventListener('click', e => {
-    const picker = e.target.closest('.wheel-picker');
-    if (!picker) return;
-    const input = picker.querySelector('input[type="time"]');
-    if (input && input.id) {
-      openWheel(input.id);
-    }
-  });
-
-</script>
-<script>
-  // Register Service Worker for PWA
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
-      // Auto-update: when a new SW is found, skip waiting and reload
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'activated') {
-            // New SW activated, reload to get fresh content
-            if (navigator.serviceWorker.controller) {
-              window.location.reload();
-            }
-          }
-        });
-      });
-    }).catch(() => {});
-  }
-</script>
-</body>
-</html>
-
 
